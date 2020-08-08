@@ -96,25 +96,3 @@ The following fields can go in the [Interface] section:
 * WorkingDirectory: Directory to run the ExecStart program from.
 * Format: Describes the interface format.  May be "text" or "json".  Defaults to "text" if unspecified.
 * Jigs: A list of jigs that this interface is compatible with.  Omit this field for "all".
-
-.coupon
--------
-
-Coupons represent guarantees that a devices has undergone testing.  They are unique, and may include a serial number, QR code, or other identifying information.  They may also include other serialized information such as MAC addresses.
-
-Coupon files can have a series of "preflight" commands that prepare environment variables to other programs.  They can also perform special calls when a scenario fails, succeeds, or regardless.
-
-Upon success, the ExecStopSuccess command is run.  If the test fails, ExecStopFail is run.
-
-If ExecStopSuccess fails, then the scenario as a whole is failed, although the ExecStopFail command will not be run.
-
-* Scenarios: A list of scenarios to run this coupon for.
-* ExecPreflight: An optional command to run before any tests are started.  If this command fails, the test will not run.  This can be used to "check out" serial numbers from a pool.
-* ExecStopSuccess: A program to run when a scenario passes.  This can be used to "confirm" the use of a serial number.  If this program returns nonzero, then the entire scenario is failed.  In this case, ExecStopFailure will not be run.
-* ExecStopFail: A program to run when a scenario fails.  This can be used to "return" unused codes to a pool.
-
-
-.updater
---------
-
-An Updater configuration can be used to read update files off of USB drives or off of the network.
