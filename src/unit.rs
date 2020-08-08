@@ -265,7 +265,7 @@ impl fmt::Display for UnitActivateError {
         match self {
             &UnitActivateError::ExecFailed(ref re) => match re {
                 &RunnyError::RunnyIoError(ref e) => {
-                    write!(f, "Unable to activate unit: {}", e.description())
+                    write!(f, "Unable to activate unit: {}", e)
                 }
                 &RunnyError::NoCommandSpecified => {
                     write!(f, "Unable to activate unit: No command specified")
@@ -373,20 +373,20 @@ impl fmt::Display for UnitDescriptionError {
                 write!(f, "missing [{}] section", sec)
             }
             &UnitDescriptionError::FileOpenError(ref e) => {
-                write!(f, "unable to open file -- {}", e.description())
+                write!(f, "unable to open file -- {}", e)
             }
             &UnitDescriptionError::ParseError(ref e) => {
-                write!(f, "syntax error: {}", e.description())
+                write!(f, "syntax error: {}", e)
             }
             &UnitDescriptionError::HumantimeError(ref e) => {
-                write!(f, "time parse error: {}", e.description())
+                write!(f, "time parse error: {}", e)
             }
             &UnitDescriptionError::RegexError(ref e) => write!(f, "unable to parse regex: {}", e),
             &UnitDescriptionError::MissingValue(ref sec, ref key) => {
                 write!(f, "key '{}' in section '{}' requires a value", key, sec)
             }
             &UnitDescriptionError::ParseIntError(ref e) => {
-                write!(f, "int parse error: {}", e.description())
+                write!(f, "int parse error: {}", e)
             }
             &UnitDescriptionError::InvalidValue(ref sec, ref key, ref val, ref allowed) => write!(
                 f,

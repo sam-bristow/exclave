@@ -437,7 +437,7 @@ impl Test {
                                             &id,
                                             ManagerControlMessageContents::LogError(format!(
                                                 "test daemon raised an error: {}",
-                                                e.description()
+                                                e
                                             )),
                                         ))
                                         .unwrap();
