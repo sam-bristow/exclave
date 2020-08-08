@@ -595,10 +595,6 @@ impl Test {
         &self.description.description
     }
 
-    pub fn timeout(&self) -> &Option<Duration> {
-        &self.description.timeout
-    }
-
     fn log_output(
         id: &UnitName,
         control: &Sender<ManagerControlMessage>,

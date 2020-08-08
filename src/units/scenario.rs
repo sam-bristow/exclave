@@ -649,8 +649,6 @@ impl Scenario {
             }
             ScenarioState::Running(next_step) => {
                 let ref test = self.test_sequence[next_step].borrow();
-                let test_timeout = test.timeout();
-                let test_max_time = self.make_timeout(test_timeout);
                 ctrl.send(ManagerControlMessage::new(
                     self.id(),
                     ManagerControlMessageContents::StartTest(test.id().clone()),
@@ -934,26 +932,6 @@ impl Scenario {
                 let scenario_elapsed_time = now.duration_since(self.start_time);
                 scenario_elapsed_time >= timeout
             }
-        }
-    }
-
-    fn make_timeout(&self, test_max_time: &Option<Duration>) -> Option<Duration> {
-        let now = Instant::now();
-        let scenario_elapsed_time = now.duration_since(self.start_time);
-
-        // If the test would take longer than the scenario has left, limit the test time.
-        if let Some(test_max_time) = *test_max_time {
-            if let Some(timeout) = self.description.timeout {
-                if (test_max_time + scenario_elapsed_time) > timeout {
-                    Some(timeout - scenario_elapsed_time)
-                } else {
-                    Some(test_max_time)
-                }
-            } else {
-                Some(test_max_time)
-            }
-        } else {
-            None
         }
     }
 
