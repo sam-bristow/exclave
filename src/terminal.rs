@@ -2,7 +2,6 @@ extern crate console;
 
 use self::console::Term;
 use std::collections::{BTreeMap, HashMap};
-use std::sync::mpsc::Receiver;
 use std::thread;
 use unit::{UnitKind, UnitName};
 use unitbroadcaster::UnitBroadcaster;

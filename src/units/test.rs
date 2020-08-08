@@ -5,7 +5,6 @@ extern crate runny;
 extern crate systemd_parser;
 
 use std::cell::RefCell;
-use std::error::Error;
 use std::fs::File;
 use std::io::{BufRead, BufReader, Read};
 use std::path::{Path, PathBuf};

@@ -260,8 +260,6 @@ impl From<RunnyError> for UnitActivateError {
 
 impl fmt::Display for UnitActivateError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use self::runny::RunnyError;
-        use std::error::Error;
         match self {
             &UnitActivateError::ExecFailed(ref re) => match re {
                 &RunnyError::RunnyIoError(ref e) => {
@@ -364,7 +362,6 @@ impl From<std::num::ParseIntError> for UnitDescriptionError {
 
 impl fmt::Display for UnitDescriptionError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use std::error::Error;
         match self {
             &UnitDescriptionError::InvalidUnitName(ref reason) => {
                 write!(f, "invalid unit name '{}'", reason)
