@@ -756,10 +756,10 @@ impl Scenario {
         thread::spawn(move || {
             for line in BufReader::new(stdout).lines() {
                 let line = line.expect("Unable to get next line");
-                if let Err(_) = thr_control.send(ManagerControlMessage::new(
+                if thr_control.send(ManagerControlMessage::new(
                     &id,
                     ManagerControlMessageContents::Log(line),
-                )) {
+                )).is_err() {
                     break;
                 }
             }
@@ -771,10 +771,10 @@ impl Scenario {
         thread::spawn(move || {
             for line in BufReader::new(stderr).lines() {
                 let line = line.expect("Unable to get next line");
-                if let Err(_) = thr_control.send(ManagerControlMessage::new(
+                if thr_control.send(ManagerControlMessage::new(
                     &id,
                     ManagerControlMessageContents::LogError(line),
-                )) {
+                )).is_err() {
                     break;
                 }
             }

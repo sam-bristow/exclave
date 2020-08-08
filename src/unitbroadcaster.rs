@@ -384,7 +384,7 @@ impl UnitBroadcaster {
         let mut notify_senders_ref = senders.lock().unwrap();
         {
             for (idx, sender) in notify_senders_ref.iter().enumerate() {
-                if let Err(_) = sender.send(event.clone()) {
+                if sender.send(event.clone()).is_err() {
                     // If an error occurred, that means the receiver has closed
                     // and so we must remove it.
                     to_remove = Some(idx);

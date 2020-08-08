@@ -146,7 +146,7 @@ impl JigDescription {
             let mut reader = BufReader::new(running);
             let mut buf = String::new();
             loop {
-                if let Err(_) = reader.read_line(&mut buf) {
+                if reader.read_line(&mut buf).is_err() {
                     break;
                 }
             }

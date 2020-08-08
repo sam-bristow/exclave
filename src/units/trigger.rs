@@ -271,10 +271,10 @@ impl Trigger {
         for line in BufReader::new(output).lines() {
             let line = line.expect("Unable to get next line");
             // If the send fails, that means the other end has closed the pipe.
-            if let Err(_) = control.send(ManagerControlMessage::new(
+            if control.send(ManagerControlMessage::new(
                 &id,
                 ManagerControlMessageContents::LogError(line),
-            )) {
+            )).is_err() {
                 break;
             }
         }
@@ -322,7 +322,7 @@ impl Trigger {
             };
 
             // If the send fails, that means the other end has closed the pipe.
-            if let Err(_) = control.send(ManagerControlMessage::new(&id, msg)) {
+            if control.send(ManagerControlMessage::new(&id, msg)).is_err() {
                 break;
             }
         }

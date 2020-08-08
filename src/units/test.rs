@@ -506,10 +506,10 @@ impl Test {
                         for line in buf_iter {
                             let line = line.expect("Unable to get next line");
                             *thr_thr_last_line.lock().unwrap() = line.clone();
-                            if let Err(_) = thr_thr_control.send(ManagerControlMessage::new(
+                            if thr_thr_control.send(ManagerControlMessage::new(
                                 &thr_id,
                                 ManagerControlMessageContents::Log(line),
-                            )) {
+                            )).is_err() {
                                 break;
                             }
                         }
@@ -608,10 +608,10 @@ impl Test {
             for line in BufReader::new(stdout).lines() {
                 let line = line.expect("Unable to get next line");
                 *thr_last_line.lock().unwrap() = line.clone();
-                if let Err(_) = thr_control.send(ManagerControlMessage::new(
+                if thr_control.send(ManagerControlMessage::new(
                     &thr_id,
                     ManagerControlMessageContents::Log(line),
-                )) {
+                )).is_err() {
                     break;
                 }
             }
@@ -631,10 +631,10 @@ impl Test {
             for line in BufReader::new(stderr).lines() {
                 let line = line.expect("Unable to get next line");
                 *thr_last_line.lock().unwrap() = line.clone();
-                if let Err(_) = thr_control.send(ManagerControlMessage::new(
+                if thr_control.send(ManagerControlMessage::new(
                     &thr_id,
                     ManagerControlMessageContents::LogError(line),
-                )) {
+                )).is_err() {
                     break;
                 }
             }
