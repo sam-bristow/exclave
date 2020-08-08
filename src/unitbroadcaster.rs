@@ -4,8 +4,8 @@ use std::sync::mpsc::{channel, Receiver, Sender};
 use std::sync::{Arc, Mutex};
 use std::time;
 
-use unitmanager::ManagerControlMessage;
 use unit::{UnitKind, UnitName};
+use unitmanager::ManagerControlMessage;
 
 #[derive(PartialEq, Eq, Hash, Debug, Clone)]
 pub enum UnitStatus {
@@ -66,7 +66,9 @@ impl fmt::Display for UnitStatus {
         match self {
             &UnitStatus::Added(ref path) => write!(f, "added file {}", path.to_string_lossy()),
             &UnitStatus::Updated(ref path) => write!(f, "updated file {}", path.to_string_lossy()),
-            &UnitStatus::LoadStarted(ref path) => write!(f, "load started {}", path.to_string_lossy()),
+            &UnitStatus::LoadStarted(ref path) => {
+                write!(f, "load started {}", path.to_string_lossy())
+            }
             &UnitStatus::LoadFailed(ref x) => write!(f, "load failed: {}", x),
             &UnitStatus::Loaded => write!(f, "loaded"),
             &UnitStatus::Selected => write!(f, "selected"),
@@ -80,8 +82,12 @@ impl fmt::Display for UnitStatus {
             &UnitStatus::DeactivatedUnsuccessfully(ref x) => {
                 write!(f, "deactivated unsuccessfilly: {}", x)
             }
-            &UnitStatus::UnloadStarted(ref path) => write!(f, "unloading {}", path.to_string_lossy()),
-            &UnitStatus::UpdateStarted(ref path) => write!(f, "updating {}", path.to_string_lossy()),
+            &UnitStatus::UnloadStarted(ref path) => {
+                write!(f, "unloading {}", path.to_string_lossy())
+            }
+            &UnitStatus::UpdateStarted(ref path) => {
+                write!(f, "updating {}", path.to_string_lossy())
+            }
             &UnitStatus::Removed(ref path) => write!(f, "removed file {}", path.to_string_lossy()),
         }
     }
@@ -367,7 +373,9 @@ pub struct UnitBroadcaster {
 
 impl UnitBroadcaster {
     pub fn new() -> Self {
-        UnitBroadcaster { senders: Arc::new(Mutex::new(vec![])) }
+        UnitBroadcaster {
+            senders: Arc::new(Mutex::new(vec![])),
+        }
     }
 
     fn broadcast_core(senders: &Arc<Mutex<Vec<Sender<UnitEvent>>>>, event: &UnitEvent) {
@@ -406,6 +414,9 @@ impl UnitBroadcaster {
     }
 
     pub fn log(&self, section: &str, message: String) {
-        self.broadcast(&UnitEvent::Log(LogEntry::new_info(UnitName::internal(section), message)));
+        self.broadcast(&UnitEvent::Log(LogEntry::new_info(
+            UnitName::internal(section),
+            message,
+        )));
     }
 }

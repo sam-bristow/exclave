@@ -1,17 +1,19 @@
 extern crate runny;
 extern crate systemd_parser;
 
-use std::path::{Path, PathBuf};
-use std::io::Read;
 use std::fs::File;
+use std::io::Read;
+use std::path::{Path, PathBuf};
 
 use config::Config;
-use unit::{UnitActivateError, UnitDeactivateError, UnitDescriptionError, UnitIncompatibleReason,
-           UnitName, UnitSelectError, UnitDeselectError};
+use unit::{
+    UnitActivateError, UnitDeactivateError, UnitDescriptionError, UnitDeselectError,
+    UnitIncompatibleReason, UnitName, UnitSelectError,
+};
 use unitmanager::UnitManager;
 
-use self::systemd_parser::items::DirectiveEntry;
 use self::runny::Runny;
+use self::systemd_parser::items::DirectiveEntry;
 
 /// A struct defining an in-memory representation of a .jig file
 #[derive(Clone)]
@@ -51,7 +53,11 @@ impl JigDescription {
         Self::from_string(&contents, unit_name, path)
     }
 
-    pub fn from_string(contents: &str, unit_name: UnitName, path: &Path) -> Result<JigDescription, UnitDescriptionError> {
+    pub fn from_string(
+        contents: &str,
+        unit_name: UnitName,
+        path: &Path,
+    ) -> Result<JigDescription, UnitDescriptionError> {
         let unit_file = systemd_parser::parse_string(&contents)?;
 
         if !unit_file.has_category("Jig") {
@@ -128,7 +134,11 @@ impl JigDescription {
             use std::io::{BufRead, BufReader};
 
             let running = Runny::new(cmd_str)
-                .directory(&Some(config.working_directory(&self.unit_directory, &self.working_directory).clone()))
+                .directory(&Some(
+                    config
+                        .working_directory(&self.unit_directory, &self.working_directory)
+                        .clone(),
+                ))
                 .timeout(config.timeout().clone())
                 .path(config.paths().clone())
                 .start()?;
@@ -143,8 +153,7 @@ impl JigDescription {
             let result = reader.get_ref().result();
             if result != 0 {
                 return Err(UnitIncompatibleReason::TestProgramReturnedNonzero(
-                    result,
-                    buf,
+                    result, buf,
                 ));
             }
         }

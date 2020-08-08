@@ -5,13 +5,13 @@ extern crate runny;
 extern crate systemd_parser;
 
 use std::fmt;
-use std::path::Path;
 use std::io;
+use std::path::Path;
 
 use self::dependy::DepError;
 use self::humantime::DurationError;
-use self::runny::RunnyError;
 use self::runny::running::RunningError;
+use self::runny::RunnyError;
 use self::systemd_parser::errors::ParserError;
 
 #[derive(PartialEq, Eq, Hash, Debug, Clone, PartialOrd, Ord, Serialize)]
@@ -195,9 +195,10 @@ impl From<RunnyError> for UnitIncompatibleReason {
             RunnyError::NoCommandSpecified => {
                 UnitIncompatibleReason::TestProgramFailed("No command specified".to_owned())
             }
-            RunnyError::RunnyIoError(ref e) => UnitIncompatibleReason::TestProgramFailed(
-                format!("Error running test program: {}", e),
-            ),
+            RunnyError::RunnyIoError(ref e) => UnitIncompatibleReason::TestProgramFailed(format!(
+                "Error running test program: {}",
+                e
+            )),
             #[cfg(unix)]
             RunnyError::NixError(ref e) => {
                 UnitIncompatibleReason::TestProgramFailed(format!("Unix error {}", e))

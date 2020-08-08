@@ -100,9 +100,7 @@ impl InterfaceDescription {
                         // If a WorkingDirectory was specified, add it to the current directory
                         // (replaces `working_directory` if the new WD is absolute)
                         if let Some(wd) = directive.value() {
-                            interface_description
-                                .working_directory
-                                = Some(PathBuf::from(wd));
+                            interface_description.working_directory = Some(PathBuf::from(wd));
                         }
                     }
                     "ExecStart" => {
@@ -211,7 +209,10 @@ impl Interface {
         config: &Config,
     ) -> Result<(), UnitActivateError> {
         let mut running = Runny::new(&self.desc.exec_start)
-            .directory(&Some(config.working_directory(&self.desc.unit_directory, &self.desc.working_directory)))
+            .directory(&Some(config.working_directory(
+                &self.desc.unit_directory,
+                &self.desc.working_directory,
+            )))
             .start()?;
 
         let stdout = running.take_output();
@@ -242,7 +243,8 @@ impl Interface {
             .send(ManagerControlMessage::new(
                 &control_sender_id,
                 ManagerControlMessageContents::InitialGreeting,
-            )).ok();
+            ))
+            .ok();
 
         Ok(())
     }
@@ -366,14 +368,14 @@ impl Interface {
             ManagerStatusMessage::Start(scenario) => {
                 writeln!(process, "START {}", Self::cfti_escape(scenario.id()))
             } /*
-            //            BroadcastMessageContents::Hello(name) => writeln!(stdin,
-            //                                                "HELLO {}", name),
-            //            BroadcastMessageContents::Ping(val) => writeln!(stdin,
-            //                                                "PING {}", val),
-            BroadcastMessageContents::Shutdown(reason) => writeln!(stdin, "EXIT {}", reason),
+              //            BroadcastMessageContents::Hello(name) => writeln!(stdin,
+              //                                                "HELLO {}", name),
+              //            BroadcastMessageContents::Ping(val) => writeln!(stdin,
+              //                                                "PING {}", val),
+              BroadcastMessageContents::Shutdown(reason) => writeln!(stdin, "EXIT {}", reason),
 
-            BroadcastMessageContents::Start(scenario) => writeln!(stdin, "START {}", scenario),
-            */
+              BroadcastMessageContents::Start(scenario) => writeln!(stdin, "START {}", scenario),
+              */
         }
     }
 
@@ -383,12 +385,14 @@ impl Interface {
 
         for c in msg.chars() {
             was_bs = match c {
-                '\\' => if was_bs {
-                    out.push('\\');
-                    false
-                } else {
-                    true
-                },
+                '\\' => {
+                    if was_bs {
+                        out.push('\\');
+                        false
+                    } else {
+                        true
+                    }
+                }
                 't' => {
                     out.push(if was_bs { '\t' } else { 't' });
                     false
@@ -520,6 +524,7 @@ impl Interface {
             .send(ManagerControlMessage::new(
                 &id,
                 ManagerControlMessageContents::ChildExited,
-            )).expect("interface couldn't send exit message to controller");
+            ))
+            .expect("interface couldn't send exit message to controller");
     }
 }

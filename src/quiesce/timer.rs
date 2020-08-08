@@ -2,12 +2,12 @@
 // Code has license CC0-1.0 license
 // https://raw.githubusercontent.com/passcod/notify/master/src/debounce/timer.rs
 
+use std::cmp::Ordering;
+use std::collections::{BinaryHeap, HashSet};
 use std::sync::mpsc;
+use std::sync::{Arc, Condvar, Mutex};
 use std::thread;
 use std::time::{Duration, Instant};
-use std::sync::{Arc, Condvar, Mutex};
-use std::collections::{BinaryHeap, HashSet};
-use std::cmp::Ordering;
 
 use super::super::unitbroadcaster::{UnitBroadcaster, UnitEvent};
 
@@ -44,10 +44,11 @@ struct ScheduleWorker {
 }
 
 impl ScheduleWorker {
-    fn new(trigger: Arc<Condvar>,
-           request_source: mpsc::Receiver<Action>,
-           broadcaster: &UnitBroadcaster)
-           -> ScheduleWorker {
+    fn new(
+        trigger: Arc<Condvar>,
+        request_source: mpsc::Receiver<Action>,
+        broadcaster: &UnitBroadcaster,
+    ) -> ScheduleWorker {
         ScheduleWorker {
             trigger: trigger,
             request_source: request_source,
@@ -135,9 +136,7 @@ pub struct WatchTimer {
 }
 
 impl WatchTimer {
-    pub fn new(broadcaster: &UnitBroadcaster,
-               delay: Duration)
-               -> WatchTimer {
+    pub fn new(broadcaster: &UnitBroadcaster, delay: Duration) -> WatchTimer {
         let (schedule_tx, schedule_rx) = mpsc::channel();
         let trigger = Arc::new(Condvar::new());
 

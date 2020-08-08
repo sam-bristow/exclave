@@ -52,13 +52,18 @@ fn oneliner_write_sleep_write_exit(
         format!(
             "Powershell -NoProfile \"Write-Output {}; Start-Sleep {}; Write-Output {}; exit {}\"",
             // "cmd /c \"echo {} & timeout /T {} & echo {} & exit {}\"",
-            start, d, stop, retcode
+            start,
+            d,
+            stop,
+            retcode
         )
     } else {
         format!(
             "Powershell -NoProfile \"Write-Output {}; Write-Output {}; exit {}\"",
             // "cmd /c \"echo {} & echo {} & exit {}\"",
-            start, stop, retcode
+            start,
+            stop,
+            retcode
         )
     }
 }
@@ -148,7 +153,8 @@ impl Exclave {
                     unit_text,
                     name,
                     &PathBuf::from("test/config"),
-                ).unwrap();
+                )
+                .unwrap();
                 self.library
                     .get_manager()
                     .borrow()
@@ -217,13 +223,11 @@ fn load_dependency() {
     exclave.add_unit(&UnitName::from_str("generic", "jig").unwrap(), GENERIC_JIG);
     exclave.rescan();
 
-    assert!(
-        exclave
-            .library
-            .get_manager()
-            .borrow()
-            .jig_is_loaded(&UnitName::from_str("generic", "jig").unwrap())
-    );
+    assert!(exclave
+        .library
+        .get_manager()
+        .borrow()
+        .jig_is_loaded(&UnitName::from_str("generic", "jig").unwrap()));
 }
 
 #[test]
@@ -298,7 +302,10 @@ ExecStop={}
             UnitEvent::Status(ref s) => {
                 if s.name.kind() == &UnitKind::Scenario {
                     if let UnitStatus::DeactivatedSuccessfully(ref msg) = s.status {
-                        panic!("unit {} deactivated before success script was run (success: {})", s.name, msg);
+                        panic!(
+                            "unit {} deactivated before success script was run (success: {})",
+                            s.name, msg
+                        );
                     }
                 }
             }
@@ -368,7 +375,10 @@ ExecStopFailure={}
             UnitEvent::Status(ref s) => {
                 if s.name.kind() == &UnitKind::Scenario {
                     if let UnitStatus::DeactivatedSuccessfully(ref msg) = s.status {
-                        panic!("unit {} deactivated before success script was run (success: {})", s.name, msg);
+                        panic!(
+                            "unit {} deactivated before success script was run (success: {})",
+                            s.name, msg
+                        );
                     }
                 }
             }
@@ -438,7 +448,10 @@ ExecStopFailure={}
             UnitEvent::Status(ref s) => {
                 if s.name.kind() == &UnitKind::Scenario {
                     if let UnitStatus::DeactivatedSuccessfully(ref msg) = s.status {
-                        panic!("unit {} deactivated before failure script was run (success: {})", s.name, msg);
+                        panic!(
+                            "unit {} deactivated before failure script was run (success: {})",
+                            s.name, msg
+                        );
                     }
                 }
             }
@@ -510,7 +523,10 @@ Tests=master
             UnitEvent::Status(ref s) => {
                 if s.name.kind() == &UnitKind::Scenario {
                     if let UnitStatus::DeactivatedSuccessfully(ref msg) = s.status {
-                        panic!("unit {} deactivated before strings were found (success: {})", s.name, msg);
+                        panic!(
+                            "unit {} deactivated before strings were found (success: {})",
+                            s.name, msg
+                        );
                     }
                 }
             }

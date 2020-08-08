@@ -10,23 +10,24 @@ use std::fs::File;
 use std::io::{BufRead, BufReader, Read};
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
-use std::sync::{Arc, Mutex};
 use std::sync::mpsc::Sender;
+use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::Duration;
 
 use self::dependy::Dependency;
 use self::humantime::{parse_duration, DurationError};
 use self::regex::Regex;
-use self::runny::Runny;
 use self::runny::running::{RunningOutput, RunningWaiter};
+use self::runny::Runny;
 use self::systemd_parser::items::DirectiveEntry;
 
 use config::Config;
-use unit::{UnitName, UnitActivateError, UnitDeactivateError, UnitSelectError, UnitDeselectError,
-           UnitIncompatibleReason, UnitDescriptionError};
-use unitmanager::{ManagerControlMessage, ManagerControlMessageContents,
-                  UnitManager};
+use unit::{
+    UnitActivateError, UnitDeactivateError, UnitDescriptionError, UnitDeselectError,
+    UnitIncompatibleReason, UnitName, UnitSelectError,
+};
+use unitmanager::{ManagerControlMessage, ManagerControlMessageContents, UnitManager};
 
 #[derive(Debug, PartialEq, Clone)]
 enum TestType {
@@ -104,7 +105,11 @@ impl TestDescription {
         Self::from_string(&contents, unit_name, path)
     }
 
-    pub fn from_string(contents: &str, unit_name: UnitName, path: &Path) -> Result<TestDescription, UnitDescriptionError> {
+    pub fn from_string(
+        contents: &str,
+        unit_name: UnitName,
+        path: &Path,
+    ) -> Result<TestDescription, UnitDescriptionError> {
         let unit_file = systemd_parser::parse_string(&contents)?;
 
         if !unit_file.has_category("Test") {
@@ -181,17 +186,18 @@ impl TestDescription {
 
                         "Type" => {
                             test_description.test_type = match directive.value() {
-                                Some(s) => {
-                                    match s.to_string().to_lowercase().as_ref() {
-                                        "simple" => TestType::Simple,
-                                        "daemon" => TestType::Daemon,
-                                        other => return Err(UnitDescriptionError::InvalidValue(
+                                Some(s) => match s.to_string().to_lowercase().as_ref() {
+                                    "simple" => TestType::Simple,
+                                    "daemon" => TestType::Daemon,
+                                    other => {
+                                        return Err(UnitDescriptionError::InvalidValue(
                                             "Test".to_owned(),
-                                        "Type".to_owned(),
-                                        other.to_owned(),
-                                        vec!["Simple".to_owned(), "Daemon".to_owned()])),
+                                            "Type".to_owned(),
+                                            other.to_owned(),
+                                            vec!["Simple".to_owned(), "Daemon".to_owned()],
+                                        ))
                                     }
-                                }
+                                },
                                 None => TestType::Simple,
                             };
                         }
@@ -204,7 +210,12 @@ impl TestDescription {
                         }
                         "ExecStart" => {
                             test_description.exec_start = match directive.value() {
-                                None => return Err(UnitDescriptionError::MissingValue("Test".to_owned(), "ExecStart".to_owned())),
+                                None => {
+                                    return Err(UnitDescriptionError::MissingValue(
+                                        "Test".to_owned(),
+                                        "ExecStart".to_owned(),
+                                    ))
+                                }
                                 Some(s) => s.to_owned(),
                             }
                         }
@@ -237,14 +248,18 @@ impl TestDescription {
                                 None => None,
                                 Some(s) => Some(Self::parse_time(s)?),
                             }
-                        }                        &_ => (),
+                        }
+                        &_ => (),
                     }
                 }
                 &_ => (),
             }
         }
         if test_description.exec_start == "" {
-            return Err(UnitDescriptionError::MissingValue("Test".to_owned(), "ExecStart".to_owned()));
+            return Err(UnitDescriptionError::MissingValue(
+                "Test".to_owned(),
+                "ExecStart".to_owned(),
+            ));
         }
         Ok(test_description)
     }
@@ -266,9 +281,11 @@ impl TestDescription {
         self.jigs.contains(name)
     }
 
-    pub fn load(&self, 
+    pub fn load(
+        &self,
         _manager: &UnitManager,
-        _config: &Config) -> Result<Test, UnitIncompatibleReason> {
+        _config: &Config,
+    ) -> Result<Test, UnitIncompatibleReason> {
         Ok(Test::new(self))
     }
 }
@@ -287,7 +304,7 @@ impl Test {
             program: Rc::new(RefCell::new(None)),
             result_arc: Arc::new(Mutex::new(None)),
             last_line: Arc::new(Mutex::new("".to_owned())),
-         }
+        }
     }
 
     pub fn select(&self, manager: &UnitManager) -> Result<(), UnitSelectError> {
@@ -301,7 +318,7 @@ impl Test {
                     break;
                 }
             }
-            if ! compatible {
+            if !compatible {
                 return Err(UnitSelectError::NoCompatibleJig);
             }
         }
@@ -315,16 +332,24 @@ impl Test {
 
     /// Send the "test finished" message and update the local result value.
     /// This ensures that we only send the "Finished" result once.
-    pub fn send_finished_once(id: &UnitName,
-                              ctrl: &Sender<ManagerControlMessage>,
-                              result_val: i32,
-                              result_arc: &Arc<Mutex<Option<i32>>>,
-                              last_line: &Arc<Mutex<String>>) {
-
+    pub fn send_finished_once(
+        id: &UnitName,
+        ctrl: &Sender<ManagerControlMessage>,
+        result_val: i32,
+        result_arc: &Arc<Mutex<Option<i32>>>,
+        last_line: &Arc<Mutex<String>>,
+    ) {
         let mut result = result_arc.lock().unwrap();
 
         if result.is_none() {
-            ctrl.send(ManagerControlMessage::new(&id, ManagerControlMessageContents::TestFinished(result_val, last_line.lock().unwrap().clone()))).ok();
+            ctrl.send(ManagerControlMessage::new(
+                &id,
+                ManagerControlMessageContents::TestFinished(
+                    result_val,
+                    last_line.lock().unwrap().clone(),
+                ),
+            ))
+            .ok();
             *result = Some(result_val);
         }
     }
@@ -334,7 +359,6 @@ impl Test {
         manager: &UnitManager,
         config: &Config,
     ) -> Result<(), UnitActivateError> {
-
         // We'll communicate to the manager through this pipe.
         let ctrl = manager.get_control_channel();
         let id = self.id().clone();
@@ -342,7 +366,11 @@ impl Test {
         *self.result_arc.lock().unwrap() = None;
 
         // Announce to the world that we've started considering this test.
-        ctrl.send(ManagerControlMessage::new(&id, ManagerControlMessageContents::TestStarted)).ok();
+        ctrl.send(ManagerControlMessage::new(
+            &id,
+            ManagerControlMessageContents::TestStarted,
+        ))
+        .ok();
 
         let cmd = &self.description.exec_start;
         let timeout = &self.description.timeout;
@@ -351,13 +379,34 @@ impl Test {
         if let Some(timeout) = *timeout {
             cmd.timeout(timeout);
         }
-        cmd.directory(&Some(config.working_directory(&self.description.unit_directory, &self.description.working_directory)));
+        cmd.directory(&Some(config.working_directory(
+            &self.description.unit_directory,
+            &self.description.working_directory,
+        )));
         let mut running = match cmd.start() {
             Ok(r) => r,
             Err(e) => {
-                ctrl.send(ManagerControlMessage::new(&id, ManagerControlMessageContents::LogError(format!("unable to start test: {:?}", e)))).unwrap();
-                ctrl.send(ManagerControlMessage::new(&id, ManagerControlMessageContents::TestFinished(-3, format!("unable to start test: {:?}", e)))).ok();
-                ctrl.send(ManagerControlMessage::new(&id, ManagerControlMessageContents::AdvanceScenario(-3))).ok();
+                ctrl.send(ManagerControlMessage::new(
+                    &id,
+                    ManagerControlMessageContents::LogError(format!(
+                        "unable to start test: {:?}",
+                        e
+                    )),
+                ))
+                .unwrap();
+                ctrl.send(ManagerControlMessage::new(
+                    &id,
+                    ManagerControlMessageContents::TestFinished(
+                        -3,
+                        format!("unable to start test: {:?}", e),
+                    ),
+                ))
+                .ok();
+                ctrl.send(ManagerControlMessage::new(
+                    &id,
+                    ManagerControlMessageContents::AdvanceScenario(-3),
+                ))
+                .ok();
                 return Err(UnitActivateError::ExecFailed(e));
             }
         };
@@ -383,15 +432,39 @@ impl Test {
                         while let Some(line_result) = buf_iter.next() {
                             match line_result {
                                 Err(e) => {
-                                    thr_control.send(ManagerControlMessage::new(&id, ManagerControlMessageContents::LogError(format!("test daemon raised an error: {}", e.description())))).unwrap();
-                                    thr_control.send(ManagerControlMessage::new(&id, ManagerControlMessageContents::AdvanceScenario(-2))).ok();
+                                    thr_control
+                                        .send(ManagerControlMessage::new(
+                                            &id,
+                                            ManagerControlMessageContents::LogError(format!(
+                                                "test daemon raised an error: {}",
+                                                e.description()
+                                            )),
+                                        ))
+                                        .unwrap();
+                                    thr_control
+                                        .send(ManagerControlMessage::new(
+                                            &id,
+                                            ManagerControlMessageContents::AdvanceScenario(-2),
+                                        ))
+                                        .ok();
                                     running.terminate(Some(Duration::from_secs(1))).ok();
                                     // thr_control.send(ManagerControlMessage::new(&id, ManagerControlMessageContents::TestFinished(-2, thr_last_line.lock().unwrap().clone()))).ok();
-                                    Self::send_finished_once(&id, &thr_control, -2, &thr_result_arc, &thr_last_line);
+                                    Self::send_finished_once(
+                                        &id,
+                                        &thr_control,
+                                        -2,
+                                        &thr_result_arc,
+                                        &thr_last_line,
+                                    );
                                     return;
                                 }
                                 Ok(line) => {
-                                    thr_control.send(ManagerControlMessage::new(&id, ManagerControlMessageContents::Log(line.clone()))).unwrap();
+                                    thr_control
+                                        .send(ManagerControlMessage::new(
+                                            &id,
+                                            ManagerControlMessageContents::Log(line.clone()),
+                                        ))
+                                        .unwrap();
                                     if r.is_match(&line) {
                                         found = true;
                                         break;
@@ -400,11 +473,29 @@ impl Test {
                             }
                         }
                         if !found {
-                            thr_control.send(ManagerControlMessage::new(&id, ManagerControlMessageContents::LogError(format!("test daemon exited before ready string was found")))).unwrap();
-                            thr_control.send(ManagerControlMessage::new(&id, ManagerControlMessageContents::AdvanceScenario(-1))).ok();
+                            thr_control
+                                .send(ManagerControlMessage::new(
+                                    &id,
+                                    ManagerControlMessageContents::LogError(format!(
+                                        "test daemon exited before ready string was found"
+                                    )),
+                                ))
+                                .unwrap();
+                            thr_control
+                                .send(ManagerControlMessage::new(
+                                    &id,
+                                    ManagerControlMessageContents::AdvanceScenario(-1),
+                                ))
+                                .ok();
                             running.terminate(Some(Duration::from_secs(1))).ok();
-                            Self::send_finished_once(&id, &thr_control, -1, &thr_result_arc, &thr_last_line);
-//                            thr_control.send(ManagerControlMessage::new(&id, ManagerControlMessageContents::TestFinished(-1, thr_last_line.lock().unwrap().clone()))).ok();
+                            Self::send_finished_once(
+                                &id,
+                                &thr_control,
+                                -1,
+                                &thr_result_arc,
+                                &thr_last_line,
+                            );
+                            //                            thr_control.send(ManagerControlMessage::new(&id, ManagerControlMessageContents::TestFinished(-1, thr_last_line.lock().unwrap().clone()))).ok();
                             return;
                         }
                     }
@@ -416,27 +507,51 @@ impl Test {
                         for line in buf_iter {
                             let line = line.expect("Unable to get next line");
                             *thr_thr_last_line.lock().unwrap() = line.clone();
-                            if let Err(_) = thr_thr_control.send(ManagerControlMessage::new(&thr_id, ManagerControlMessageContents::Log(line))) {
+                            if let Err(_) = thr_thr_control.send(ManagerControlMessage::new(
+                                &thr_id,
+                                ManagerControlMessageContents::Log(line),
+                            )) {
                                 break;
                             }
                         }
                     });
 
                     // Advance to the next test while this one hangs out.
-                    thr_control.send(ManagerControlMessage::new(&id, ManagerControlMessageContents::AdvanceScenario(0))).ok();
+                    thr_control
+                        .send(ManagerControlMessage::new(
+                            &id,
+                            ManagerControlMessageContents::AdvanceScenario(0),
+                        ))
+                        .ok();
                     running.wait().ok();
-                    Self::send_finished_once(&id, &thr_control, running.result(), &thr_result_arc, &thr_last_line);
+                    Self::send_finished_once(
+                        &id,
+                        &thr_control,
+                        running.result(),
+                        &thr_result_arc,
+                        &thr_last_line,
+                    );
                 });
-            },
+            }
             TestType::Simple => {
-
                 // Keep a waiter around in a separate thread to send that AdvanceScenario message upon completion.
                 Self::log_output(&id, &ctrl, running.take_output(), &last_line);
                 Self::log_error(&id, &ctrl, running.take_error(), &last_line);
                 thread::spawn(move || {
                     running.wait().ok();
-                    Self::send_finished_once(&id, &thr_control, running.result(), &thr_result_arc, &thr_last_line);
-                    thr_control.send(ManagerControlMessage::new(&id, ManagerControlMessageContents::AdvanceScenario(running.result()))).ok();
+                    Self::send_finished_once(
+                        &id,
+                        &thr_control,
+                        running.result(),
+                        &thr_result_arc,
+                        &thr_last_line,
+                    );
+                    thr_control
+                        .send(ManagerControlMessage::new(
+                            &id,
+                            ManagerControlMessageContents::AdvanceScenario(running.result()),
+                        ))
+                        .ok();
                 });
             }
         }
@@ -450,7 +565,13 @@ impl Test {
             // For Daemons, if they haven't failed so far, then they might fail when we tell them
             // to quit.  Since they've fulfilled their purpose, issue a "pass" message.
             if self.description.test_type == TestType::Daemon {
-                Self::send_finished_once(&self.description.id, &manager.get_control_channel(), 0, &self.result_arc, &self.last_line);
+                Self::send_finished_once(
+                    &self.description.id,
+                    &manager.get_control_channel(),
+                    0,
+                    &self.result_arc,
+                    &self.last_line,
+                );
             }
             running.terminate(&None);
         }
@@ -479,7 +600,12 @@ impl Test {
         &self.description.timeout
     }
 
-    fn log_output(id: &UnitName, control: &Sender<ManagerControlMessage>, stdout: RunningOutput, last_line: &Arc<Mutex<String>>) {
+    fn log_output(
+        id: &UnitName,
+        control: &Sender<ManagerControlMessage>,
+        stdout: RunningOutput,
+        last_line: &Arc<Mutex<String>>,
+    ) {
         let thr_control = control.clone();
         let thr_last_line = last_line.clone();
         let thr_id = id.clone();
@@ -487,14 +613,22 @@ impl Test {
             for line in BufReader::new(stdout).lines() {
                 let line = line.expect("Unable to get next line");
                 *thr_last_line.lock().unwrap() = line.clone();
-                if let Err(_) = thr_control.send(ManagerControlMessage::new(&thr_id, ManagerControlMessageContents::Log(line))) {
+                if let Err(_) = thr_control.send(ManagerControlMessage::new(
+                    &thr_id,
+                    ManagerControlMessageContents::Log(line),
+                )) {
                     break;
                 }
             }
         });
     }
 
-    fn log_error(id: &UnitName, control: &Sender<ManagerControlMessage>, stderr: RunningOutput, last_line: &Arc<Mutex<String>>) {
+    fn log_error(
+        id: &UnitName,
+        control: &Sender<ManagerControlMessage>,
+        stderr: RunningOutput,
+        last_line: &Arc<Mutex<String>>,
+    ) {
         let thr_control = control.clone();
         let thr_last_line = last_line.clone();
         let thr_id = id.clone();
@@ -502,7 +636,10 @@ impl Test {
             for line in BufReader::new(stderr).lines() {
                 let line = line.expect("Unable to get next line");
                 *thr_last_line.lock().unwrap() = line.clone();
-                if let Err(_) = thr_control.send(ManagerControlMessage::new(&thr_id, ManagerControlMessageContents::LogError(line))) {
+                if let Err(_) = thr_control.send(ManagerControlMessage::new(
+                    &thr_id,
+                    ManagerControlMessageContents::LogError(line),
+                )) {
                     break;
                 }
             }

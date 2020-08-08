@@ -7,19 +7,22 @@ use std::fs::File;
 use std::io::{BufRead, BufReader, Error, ErrorKind, Read, Write};
 use std::path::{Path, PathBuf};
 use std::sync::mpsc::Sender;
-use std::time::Duration;
 use std::thread;
+use std::time::Duration;
 
 use config::Config;
-use unit::{UnitActivateError, UnitDeactivateError, UnitDescriptionError, UnitDeselectError,
-           UnitIncompatibleReason, UnitName, UnitSelectError};
+use unit::{
+    UnitActivateError, UnitDeactivateError, UnitDescriptionError, UnitDeselectError,
+    UnitIncompatibleReason, UnitName, UnitSelectError,
+};
 use unitbroadcaster::LogEntry;
-use unitmanager::{ManagerControlMessage, ManagerControlMessageContents, ManagerStatusMessage,
-                  UnitManager};
+use unitmanager::{
+    ManagerControlMessage, ManagerControlMessageContents, ManagerStatusMessage, UnitManager,
+};
 
-use self::systemd_parser::items::DirectiveEntry;
-use self::runny::Runny;
 use self::runny::running::{Running, RunningOutput};
+use self::runny::Runny;
+use self::systemd_parser::items::DirectiveEntry;
 
 #[derive(Clone, Copy)]
 enum LoggerFormat {
@@ -218,9 +221,10 @@ impl Logger {
         config: &Config,
     ) -> Result<(), UnitActivateError> {
         let mut running = Runny::new(self.description.exec_start.as_str())
-            .directory(&Some(
-                config.working_directory(&self.description.unit_directory, &self.description.working_directory),
-            ))
+            .directory(&Some(config.working_directory(
+                &self.description.unit_directory,
+                &self.description.working_directory,
+            )))
             .start()?;
 
         // Have stdout and stderr log their output.
@@ -231,9 +235,7 @@ impl Logger {
         let thr_sender_id = control_sender_id.clone();
         let thr_sender = control_sender.clone();
         thread::spawn(move || Self::text_read(thr_sender_id, thr_sender, stdout));
-        thread::spawn(move || {
-            Self::text_read(control_sender_id, control_sender, stderr)
-        });
+        thread::spawn(move || Self::text_read(control_sender_id, control_sender, stderr));
 
         let control_sender = manager.get_control_channel();
         let control_sender_id = self.id().clone();
@@ -276,11 +278,10 @@ impl Logger {
         let process = process_opt.as_mut().unwrap();
 
         match msg {
-            ManagerStatusMessage::Log(l) =>
-                match self.description.format {
-                    LoggerFormat::TSV => self.tsv_write(l, process),
-                    LoggerFormat::JSON => self.json_write(l, process),
-                },
+            ManagerStatusMessage::Log(l) => match self.description.format {
+                LoggerFormat::TSV => self.tsv_write(l, process),
+                LoggerFormat::JSON => self.json_write(l, process),
+            },
             _ => Ok(()),
         }
     }

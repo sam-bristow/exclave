@@ -8,8 +8,7 @@ pub struct UnitLoader {
 }
 
 impl UnitLoader {
-    pub fn new(broadcaster: &UnitBroadcaster)
-               -> Self {
+    pub fn new(broadcaster: &UnitBroadcaster) -> Self {
         UnitLoader {
             broadcaster: broadcaster.clone(),
         }
@@ -38,14 +37,23 @@ impl UnitLoader {
     }
 
     pub fn load(&self, name: &UnitName, path: &PathBuf) {
-        self.broadcaster.broadcast(&UnitEvent::Status(UnitStatusEvent::new_load_started(name, path)));
+        self.broadcaster
+            .broadcast(&UnitEvent::Status(UnitStatusEvent::new_load_started(
+                name, path,
+            )));
     }
 
     pub fn update(&self, name: &UnitName, path: &PathBuf) {
-        self.broadcaster.broadcast(&UnitEvent::Status(UnitStatusEvent::new_update_started(name, path)));
+        self.broadcaster
+            .broadcast(&UnitEvent::Status(UnitStatusEvent::new_update_started(
+                name, path,
+            )));
     }
 
     pub fn unload(&self, name: &UnitName, path: &PathBuf) {
-        self.broadcaster.broadcast(&UnitEvent::Status(UnitStatusEvent::new_unload_started(name, path)));
+        self.broadcaster
+            .broadcast(&UnitEvent::Status(UnitStatusEvent::new_unload_started(
+                name, path,
+            )));
     }
 }
