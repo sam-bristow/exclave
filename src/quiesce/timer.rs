@@ -50,8 +50,8 @@ impl ScheduleWorker {
         broadcaster: &UnitBroadcaster,
     ) -> ScheduleWorker {
         ScheduleWorker {
-            trigger: trigger,
-            request_source: request_source,
+            trigger,
+            request_source,
             schedule: BinaryHeap::new(),
             ignore: HashSet::new(),
             broadcaster: broadcaster.clone(),
@@ -148,9 +148,9 @@ impl WatchTimer {
 
         WatchTimer {
             counter: 0,
-            schedule_tx: schedule_tx,
-            trigger: trigger,
-            delay: delay,
+            schedule_tx,
+            trigger,
+            delay,
         }
     }
 
@@ -161,7 +161,7 @@ impl WatchTimer {
             .send(Action::Schedule(ScheduledEvent {
                 id: self.counter,
                 when: Instant::now() + self.delay,
-                event: event,
+                event,
             }))
             .expect("Failed to send a request to the global scheduling worker");
 

@@ -201,7 +201,7 @@ impl ManagerControlMessage {
     pub fn new(id: &UnitName, contents: ManagerControlMessageContents) -> Self {
         ManagerControlMessage {
             sender: id.clone(),
-            contents: contents,
+            contents,
         }
     }
 }

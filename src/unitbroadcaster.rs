@@ -116,7 +116,7 @@ impl UnitStatusEvent {
         };
 
         Some(UnitStatusEvent {
-            name: name,
+            name,
             status: UnitStatus::Added(path.to_owned()),
         })
     }
@@ -127,7 +127,7 @@ impl UnitStatusEvent {
         };
 
         Some(UnitStatusEvent {
-            name: name,
+            name,
             status: UnitStatus::Updated(path.to_owned()),
         })
     }
@@ -138,7 +138,7 @@ impl UnitStatusEvent {
         };
 
         Some(UnitStatusEvent {
-            name: name,
+            name,
             status: UnitStatus::Removed(path.to_owned()),
         })
     }
@@ -239,7 +239,7 @@ pub struct UnitCategoryEvent {
 impl UnitCategoryEvent {
     pub fn new(kind: UnitKind, status: &UnitCategoryStatus) -> Self {
         UnitCategoryEvent {
-            kind: kind,
+            kind,
             status: status.clone(),
         }
     }

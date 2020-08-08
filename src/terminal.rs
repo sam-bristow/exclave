@@ -59,7 +59,7 @@ impl TerminalInterface {
 
         thread::spawn(move || {
             let mut ti = TerminalInterface {
-                output_type: output_type,
+                output_type,
                 unit_status: HashMap::new(),
                 category_status: BTreeMap::new(),
                 terminal: stdout,

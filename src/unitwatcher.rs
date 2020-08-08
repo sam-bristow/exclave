@@ -66,7 +66,7 @@ impl UnitWatcher {
         UnitWatcher {
             paths: vec![],
             broadcaster: broadcaster.clone(),
-            watcher: watcher,
+            watcher,
         }
     }
 

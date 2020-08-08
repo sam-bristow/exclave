@@ -37,7 +37,7 @@ struct AssumptionDependency {
 impl AssumptionDependency {
     pub fn new(name: UnitName) -> AssumptionDependency {
         AssumptionDependency {
-            name: name,
+            name,
             requirements: vec![],
             suggestions: vec![],
             provides: vec![],
@@ -481,14 +481,14 @@ impl Scenario {
 
         Scenario {
             description: desc.clone(),
-            tests: tests,
-            test_sequence: test_sequence,
+            tests,
+            test_sequence,
             test_states: test_state,
             exec_start_state: Rc::new(RefCell::new(TestState::Pending)),
             state: Rc::new(RefCell::new(ScenarioState::Idle)),
             support_wd: Rc::new(RefCell::new(desc.unit_directory.clone())),
             failures: Rc::new(RefCell::new(0)),
-            graph: graph,
+            graph,
             start_time: Instant::now(),
             program: Rc::new(RefCell::new(None)),
         }

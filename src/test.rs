@@ -122,10 +122,10 @@ impl Exclave {
         }
 
         Exclave {
-            broadcaster: broadcaster,
-            library: library,
-            receiver: receiver,
-            control: control,
+            broadcaster,
+            library,
+            receiver,
+            control,
         }
     }
 
