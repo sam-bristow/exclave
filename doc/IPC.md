@@ -60,7 +60,7 @@ Verbs that may be sent by the CFTI client:
  * TESTS - Request a list of tests.
  * START [scenario] - Begins running the specified scenario, or the current scenario if none was specified.
  * ABORT - Stop the current scenario without running all tests.
- * PONG [id] - Respond to a PING command, to indicate the program is still active.  Must respond withing five seconds.
+ * PONG [id] - Respond to a PING command, to indicate the program is still active.  Must respond within five seconds.
  * LOG [message] - Log a message to the log bus.  Note that it will be echoed back, so be careful not to create an infinite loop.
  * SHUTDOWN [message] - Tell the test infrastructure to shut down.
 

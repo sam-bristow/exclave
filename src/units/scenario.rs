@@ -676,7 +676,7 @@ impl Scenario {
                 );
             }
 
-            // If we're transitioning to the Finshed state, it means we just finished
+            // If we're transitioning to the Finished state, it means we just finished
             // running some tests.  Broadcast the result.
             ScenarioState::ScenarioFinished => self.finish_scenario(ctrl),
         }

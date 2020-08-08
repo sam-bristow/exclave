@@ -98,7 +98,7 @@ impl TerminalInterface {
     }
 
     fn update_unit(&mut self, event: UnitEvent) {
-        // Insert the new event into the relevent data structures
+        // Insert the new event into the relevant data structures
         match event {
             UnitEvent::Category(ref cat) => {
                 self.category_status

@@ -20,7 +20,7 @@ Some fields are common to every unit file, though they may not make sense for ce
 
 .test files describe Tests, which are atomic, fundamental units of test.
 
-Test objects have hard and soft dependencies.  For example, it could be that you want to run a color LCD test after running a sound test.  But if the sound test fails, you still want to run the color LCD test.  However, both depend on the firmware having been programmed.  Firmware programming is a hard depenency, and the sound test is a soft depenency.
+Test objects have hard and soft dependencies.  For example, it could be that you want to run a color LCD test after running a sound test.  But if the sound test fails, you still want to run the color LCD test.  However, both depend on the firmware having been programmed.  Firmware programming is a hard dependency, and the sound test is a soft dependency.
 
 Fields:
 
