@@ -397,9 +397,8 @@ impl UnitBroadcaster {
             notify_senders_ref.remove(idx);
         }
 
-        match *event {
-            UnitEvent::Shutdown => notify_senders_ref.clear(),
-            _ => (),
+        if let UnitEvent::Shutdown = * event {
+            notify_senders_ref.clear()
         }
     }
 

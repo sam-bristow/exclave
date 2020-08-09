@@ -1329,20 +1329,17 @@ impl UnitManager {
     /// Send a Vec<ManagerStatusMessage> to a specific endpoint.
     pub fn send_messages_to(&self, sender_name: &UnitName, messages: Vec<ManagerStatusMessage>) {
         let mut deactivate_reason = None;
-        match *sender_name.kind() {
-            UnitKind::Interface => {
-                let interface_table = self.interfaces.borrow();
-                let interface = interface_table
-                    .get(sender_name)
-                    .expect("Unable to find Interface in the library");
-                for msg in messages {
-                    if let Err(e) = interface.borrow().output_message(msg) {
-                        deactivate_reason = Some(e);
-                        break;
-                    }
+        if let UnitKind::Interface = *sender_name.kind() {
+            let interface_table = self.interfaces.borrow();
+            let interface = interface_table
+                .get(sender_name)
+                .expect("Unable to find Interface in the library");
+            for msg in messages {
+                if let Err(e) = interface.borrow().output_message(msg) {
+                    deactivate_reason = Some(e);
+                    break;
                 }
             }
-            _ => (),
         }
         if let Some(deactivate_reason) = deactivate_reason {
             self.deactivate(

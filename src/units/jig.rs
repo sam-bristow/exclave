@@ -76,8 +76,8 @@ impl JigDescription {
         };
 
         for entry in unit_file.lookup_by_category("Jig") {
-            match *entry {
-                DirectiveEntry::Solo(ref directive) => match directive.key() {
+            if let DirectiveEntry::Solo(ref directive) = *entry {
+                match directive.key() {
                     "Name" => jig_description.name = directive.value().unwrap_or("").to_owned(),
                     "Description" => {
                         jig_description.description = directive.value().unwrap_or("").to_owned()
@@ -106,8 +106,7 @@ impl JigDescription {
                         }
                     }
                     &_ => (),
-                },
-                _ => (),
+                }
             }
         }
         Ok(jig_description)

@@ -142,116 +142,113 @@ impl TestDescription {
         };
 
         for entry in unit_file.lookup_by_category("Test") {
-            match *entry {
-                DirectiveEntry::Solo(ref directive) => {
-                    match directive.key() {
-                        "Name" => {
-                            test_description.name = directive.value().unwrap_or("").to_owned()
+            if let DirectiveEntry::Solo(ref directive) = *entry {
+                match directive.key() {
+                    "Name" => {
+                        test_description.name = directive.value().unwrap_or("").to_owned()
+                    }
+                    "Description" => {
+                        test_description.description =
+                            directive.value().unwrap_or("").to_owned()
+                    }
+                    "Jigs" => {
+                        test_description.jigs = match directive.value() {
+                            Some(s) => UnitName::from_list(s, "jig")?,
+                            None => vec![],
                         }
-                        "Description" => {
-                            test_description.description =
-                                directive.value().unwrap_or("").to_owned()
+                    }
+                    "Provides" => {
+                        test_description.provides = match directive.value() {
+                            Some(s) => UnitName::from_list(s, "test")?,
+                            None => vec![],
                         }
-                        "Jigs" => {
-                            test_description.jigs = match directive.value() {
-                                Some(s) => UnitName::from_list(s, "jig")?,
-                                None => vec![],
-                            }
+                    }
+                    "Requires" => {
+                        test_description.requires = match directive.value() {
+                            Some(s) => UnitName::from_list(s, "test")?,
+                            None => vec![],
                         }
-                        "Provides" => {
-                            test_description.provides = match directive.value() {
-                                Some(s) => UnitName::from_list(s, "test")?,
-                                None => vec![],
-                            }
+                    }
+                    "Suggests" => {
+                        test_description.suggests = match directive.value() {
+                            Some(s) => UnitName::from_list(s, "test")?,
+                            None => vec![],
                         }
-                        "Requires" => {
-                            test_description.requires = match directive.value() {
-                                Some(s) => UnitName::from_list(s, "test")?,
-                                None => vec![],
-                            }
+                    }
+                    "DaemonReadyText" => {
+                        test_description.test_daemon_ready = match directive.value() {
+                            Some(s) => Some(Regex::new(s)?),
+                            None => None,
                         }
-                        "Suggests" => {
-                            test_description.suggests = match directive.value() {
-                                Some(s) => UnitName::from_list(s, "test")?,
-                                None => vec![],
-                            }
-                        }
-                        "DaemonReadyText" => {
-                            test_description.test_daemon_ready = match directive.value() {
-                                Some(s) => Some(Regex::new(s)?),
-                                None => None,
-                            }
-                        }
+                    }
 
-                        "Type" => {
-                            test_description.test_type = match directive.value() {
-                                Some(s) => match s.to_string().to_lowercase().as_ref() {
-                                    "simple" => TestType::Simple,
-                                    "daemon" => TestType::Daemon,
-                                    other => {
-                                        return Err(UnitDescriptionError::InvalidValue(
-                                            "Test".to_owned(),
-                                            "Type".to_owned(),
-                                            other.to_owned(),
-                                            vec!["Simple".to_owned(), "Daemon".to_owned()],
-                                        ))
-                                    }
-                                },
-                                None => TestType::Simple,
-                            };
-                        }
-                        "WorkingDirectory" => {
-                            // If a WorkingDirectory was specified, add it to the current directory
-                            // (replaces `working_directory` if the new WD is absolute)
-                            if let Some(wd) = directive.value() {
-                                test_description.working_directory = Some(PathBuf::from(wd));
-                            }
-                        }
-                        "ExecStart" => {
-                            test_description.exec_start = match directive.value() {
-                                None => {
-                                    return Err(UnitDescriptionError::MissingValue(
+                    "Type" => {
+                        test_description.test_type = match directive.value() {
+                            Some(s) => match s.to_string().to_lowercase().as_ref() {
+                                "simple" => TestType::Simple,
+                                "daemon" => TestType::Daemon,
+                                other => {
+                                    return Err(UnitDescriptionError::InvalidValue(
                                         "Test".to_owned(),
-                                        "ExecStart".to_owned(),
+                                        "Type".to_owned(),
+                                        other.to_owned(),
+                                        vec!["Simple".to_owned(), "Daemon".to_owned()],
                                     ))
                                 }
-                                Some(s) => s.to_owned(),
-                            }
-                        }
-                        "Timeout" => {
-                            test_description.timeout = match directive.value() {
-                                None => None,
-                                Some(s) => Some(Self::parse_time(s)?),
-                            }
-                        }
-                        "ExecStopSuccess" => {
-                            test_description.exec_stop_success = match directive.value() {
-                                None => None,
-                                Some(s) => Some(s.to_owned()),
-                            }
-                        }
-                        "ExecStopSuccessTimeout" => {
-                            test_description.exec_stop_success_timeout = match directive.value() {
-                                None => None,
-                                Some(s) => Some(Self::parse_time(s)?),
-                            }
-                        }
-                        "ExecStopFailure" => {
-                            test_description.exec_stop_failure = match directive.value() {
-                                None => None,
-                                Some(s) => Some(s.to_owned()),
-                            }
-                        }
-                        "ExecStopFailureTimeout" => {
-                            test_description.exec_stop_failure_timeout = match directive.value() {
-                                None => None,
-                                Some(s) => Some(Self::parse_time(s)?),
-                            }
-                        }
-                        &_ => (),
+                            },
+                            None => TestType::Simple,
+                        };
                     }
+                    "WorkingDirectory" => {
+                        // If a WorkingDirectory was specified, add it to the current directory
+                        // (replaces `working_directory` if the new WD is absolute)
+                        if let Some(wd) = directive.value() {
+                            test_description.working_directory = Some(PathBuf::from(wd));
+                        }
+                    }
+                    "ExecStart" => {
+                        test_description.exec_start = match directive.value() {
+                            None => {
+                                return Err(UnitDescriptionError::MissingValue(
+                                    "Test".to_owned(),
+                                    "ExecStart".to_owned(),
+                                ))
+                            }
+                            Some(s) => s.to_owned(),
+                        }
+                    }
+                    "Timeout" => {
+                        test_description.timeout = match directive.value() {
+                            None => None,
+                            Some(s) => Some(Self::parse_time(s)?),
+                        }
+                    }
+                    "ExecStopSuccess" => {
+                        test_description.exec_stop_success = match directive.value() {
+                            None => None,
+                            Some(s) => Some(s.to_owned()),
+                        }
+                    }
+                    "ExecStopSuccessTimeout" => {
+                        test_description.exec_stop_success_timeout = match directive.value() {
+                            None => None,
+                            Some(s) => Some(Self::parse_time(s)?),
+                        }
+                    }
+                    "ExecStopFailure" => {
+                        test_description.exec_stop_failure = match directive.value() {
+                            None => None,
+                            Some(s) => Some(s.to_owned()),
+                        }
+                    }
+                    "ExecStopFailureTimeout" => {
+                        test_description.exec_stop_failure_timeout = match directive.value() {
+                            None => None,
+                            Some(s) => Some(Self::parse_time(s)?),
+                        }
+                    }
+                    &_ => (),
                 }
-                _ => (),
             }
         }
         if test_description.exec_start == "" {
