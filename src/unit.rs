@@ -109,13 +109,12 @@ impl UnitName {
     /// If no extension is present, use default_type as the extension.
     pub fn from_str(name: &str, default_type: &str) -> Result<Self, UnitNameError> {
         let path = Path::new(name);
-        let result = if path.extension().is_none() {
+        if path.extension().is_none() {
             let new_path = format!("{}.{}", path.to_string_lossy(), default_type);
             Self::from_path(&Path::new(&new_path))
         } else {
             Self::from_path(&path)
-        };
-        result
+        }
     }
 
     pub fn from_list(s: &str, default_type: &str) -> Result<Vec<Self>, UnitNameError> {
