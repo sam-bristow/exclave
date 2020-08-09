@@ -627,7 +627,7 @@ impl UnitManager {
         // Activate the interface, which actually starts it up.
         match self.interfaces.borrow().get(id) {
             Some(i) => i.borrow_mut().activate(self, &*self.cfg.lock().unwrap()),
-            None => return Err(UnitActivateError::UnitNotFound),
+            None => Err(UnitActivateError::UnitNotFound),
         }
     }
 
@@ -635,7 +635,7 @@ impl UnitManager {
         // Activate the interface, which actually starts it up.
         match self.triggers.borrow().get(id) {
             Some(i) => i.borrow_mut().activate(self, &*self.cfg.lock().unwrap()),
-            None => return Err(UnitActivateError::UnitNotFound),
+            None => Err(UnitActivateError::UnitNotFound),
         }
     }
 
@@ -643,7 +643,7 @@ impl UnitManager {
         // Activate the interface, which actually starts it up.
         match self.loggers.borrow().get(id) {
             Some(i) => i.borrow_mut().activate(self, &*self.cfg.lock().unwrap()),
-            None => return Err(UnitActivateError::UnitNotFound),
+            None => Err(UnitActivateError::UnitNotFound),
         }
     }
 
@@ -731,7 +731,7 @@ impl UnitManager {
     fn deactivate_interface(&self, id: &UnitName) -> Result<(), UnitDeactivateError> {
         let interfaces = self.interfaces.borrow();
         match interfaces.get(id) {
-            None => return Err(UnitDeactivateError::UnitNotFound),
+            None => Err(UnitDeactivateError::UnitNotFound),
             Some(interface) => interface.borrow_mut().deactivate(),
         }
     }
@@ -739,7 +739,7 @@ impl UnitManager {
     fn deactivate_trigger(&self, id: &UnitName) -> Result<(), UnitDeactivateError> {
         let triggers = self.triggers.borrow();
         match triggers.get(id) {
-            None => return Err(UnitDeactivateError::UnitNotFound),
+            None => Err(UnitDeactivateError::UnitNotFound),
             Some(trigger) => trigger.borrow_mut().deactivate(),
         }
     }
@@ -747,7 +747,7 @@ impl UnitManager {
     fn deactivate_logger(&self, id: &UnitName) -> Result<(), UnitDeactivateError> {
         let loggers = self.loggers.borrow();
         match loggers.get(id) {
-            None => return Err(UnitDeactivateError::UnitNotFound),
+            None => Err(UnitDeactivateError::UnitNotFound),
             Some(interface) => interface.borrow_mut().deactivate(),
         }
     }
@@ -755,7 +755,7 @@ impl UnitManager {
     fn deactivate_test(&self, id: &UnitName) -> Result<(), UnitDeactivateError> {
         let tests = self.tests.borrow();
         match tests.get(id) {
-            None => return Err(UnitDeactivateError::UnitNotFound),
+            None => Err(UnitDeactivateError::UnitNotFound),
             Some(test) => test.borrow_mut().deactivate(self),
         }
     }
@@ -1189,7 +1189,7 @@ impl UnitManager {
     fn broadcast_selected_jig(&self) {
         let jig_opt = self.current_jig.borrow();
         match *jig_opt {
-            None => return,
+            None => {},
             Some(ref j) => {
                 let jig = j.borrow();
                 for (interface_id, _) in self.interfaces.borrow().iter() {
@@ -1212,7 +1212,7 @@ impl UnitManager {
     fn broadcast_selected_scenario(&self) {
         let opt = self.current_scenario.borrow();
         match *opt {
-            None => return,
+            None => {},
             Some(ref j) => {
                 let scenario = j.borrow();
                 for (interface_id, _) in self.interfaces.borrow().iter() {

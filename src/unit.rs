@@ -115,7 +115,7 @@ impl UnitName {
         } else {
             Self::from_path(&path)
         };
-        return result;
+        result
     }
 
     pub fn from_list(s: &str, default_type: &str) -> Result<Vec<Self>, UnitNameError> {

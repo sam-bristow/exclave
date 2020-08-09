@@ -16,7 +16,7 @@ impl UnitLoader {
 
     pub fn process_message(&self, msg: &UnitEvent) {
         match msg {
-            &UnitEvent::Shutdown => return,
+            &UnitEvent::Shutdown => {},
             &UnitEvent::Status(ref evt) => self.handle_status(evt),
             &UnitEvent::RescanRequest => (),
             &UnitEvent::RescanStart => (),
