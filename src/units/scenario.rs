@@ -317,7 +317,7 @@ impl ScenarioDescription {
         _: &Config,
     ) -> Result<(Vec<UnitName>, Dependy<UnitName>), UnitIncompatibleReason> {
         // If there is at least one jig present, ensure that it is loaded.
-        if self.jigs.len() > 0 {
+        if !self.jigs.is_empty() {
             let mut loaded = false;
             for jig_name in &self.jigs {
                 if manager.jig_is_loaded(&jig_name) {

@@ -309,7 +309,7 @@ impl Test {
     pub fn select(&self, manager: &UnitManager) -> Result<(), UnitSelectError> {
         // If there is at least one jig in the description list, then make sure
         // that jig is loaded.
-        if self.description.jigs.len() > 0 {
+        if !self.description.jigs.is_empty() {
             let mut compatible = false;
             for jig_name in &self.description.jigs {
                 if manager.jig_is_loaded(&jig_name) {

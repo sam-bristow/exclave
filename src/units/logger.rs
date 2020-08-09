@@ -151,7 +151,7 @@ impl LoggerDescription {
         manager: &UnitManager,
         _: &Config,
     ) -> Result<(), UnitIncompatibleReason> {
-        if self.jigs.len() == 0 {
+        if self.jigs.is_empty() {
             return Ok(());
         }
         for jig_name in &self.jigs {

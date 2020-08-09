@@ -198,7 +198,7 @@ impl TerminalInterface {
             }
         }
 
-        if self.logs.len() > 0 {
+        if !self.logs.is_empty() {
             line_count = line_count + 1;
             self.terminal
                 .write_line(format!("Logs: ").as_str())

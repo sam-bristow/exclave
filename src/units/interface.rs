@@ -150,7 +150,7 @@ impl InterfaceDescription {
         manager: &UnitManager,
         _: &Config,
     ) -> Result<(), UnitIncompatibleReason> {
-        if self.jigs.len() == 0 {
+        if self.jigs.is_empty() {
             return Ok(());
         }
         for jig_name in &self.jigs {
@@ -440,7 +440,7 @@ impl Interface {
                 .collect();
 
             // Don't crash if we get a blank line.
-            if words.len() == 0 {
+            if words.is_empty() {
                 continue;
             }
 

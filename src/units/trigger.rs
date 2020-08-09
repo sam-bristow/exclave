@@ -145,7 +145,7 @@ impl TriggerDescription {
         manager: &UnitManager,
         _: &Config,
     ) -> Result<(), UnitIncompatibleReason> {
-        if self.jigs.len() == 0 {
+        if self.jigs.is_empty() {
             return Ok(());
         }
         for jig_name in &self.jigs {
@@ -289,7 +289,7 @@ impl Trigger {
                 .collect();
 
             // Don't crash if we get a blank line.
-            let msg = if words.len() == 0 {
+            let msg = if words.is_empty() {
                 ManagerControlMessageContents::StartScenario(None)
             } else {
                 let verb = words[0].to_lowercase();
@@ -301,7 +301,7 @@ impl Trigger {
                         "Unable to stop tests".to_owned(),
                     ),
                     "start" => {
-                        if words.len() > 0 {
+                        if !words.is_empty() {
                             match UnitName::from_str(&words[0], "test") {
                                 Ok(name) => {
                                     ManagerControlMessageContents::StartScenario(Some(name))
