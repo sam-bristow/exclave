@@ -176,7 +176,7 @@ impl TerminalInterface {
                     .as_str(),
                 )
                 .expect("Unable to write unit header");
-            line_count = line_count + 1;
+            line_count += 1;
 
             for (unit_name, unit_event) in self
                 .unit_status
@@ -184,7 +184,7 @@ impl TerminalInterface {
                 .expect("Couldn't find any category bucket")
                 .iter()
             {
-                line_count = line_count + 1;
+                line_count += 1;
                 self.terminal
                     .write_line(
                         format!(
@@ -199,13 +199,13 @@ impl TerminalInterface {
         }
 
         if !self.logs.is_empty() {
-            line_count = line_count + 1;
+            line_count += 1;
             self.terminal
                 .write_line(format!("Logs: ").as_str())
                 .expect("Unable to write log");
         }
         for log_line in self.logs.iter() {
-            line_count = line_count + 1;
+            line_count += 1;
             self.terminal
                 .write_line(format!("  {}", log_line).as_str())
                 .expect("Unable to write log");

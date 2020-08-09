@@ -144,7 +144,7 @@ fn main() {
             )
             .expect("Couldn't write message to logfile");
         }
-        loops = loops + 1;
+        loops += 1;
         unit_loader.process_message(&msg);
         unit_library.process_message(&msg);
         quiesce.process_message(&msg);
