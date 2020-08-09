@@ -223,9 +223,7 @@ impl Trigger {
                 let thr_sender = control_sender.clone();
                 thread::spawn(move || Self::text_read_stderr(thr_sender_id, thr_sender, stderr));
             }
-            TriggerFormat::JSON => {
-                ();
-            }
+            TriggerFormat::JSON => {}
         };
 
         *self.process.borrow_mut() = Some(running);
