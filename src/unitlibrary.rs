@@ -179,14 +179,14 @@ impl UnitLibrary {
 
     fn mark_dirty(&self, name: &UnitName) {
         // Add the unit name to a list of "dirty units" that will be checked during "rescan()"
-        match name.kind() {
-            &UnitKind::Interface => self.dirty_interfaces.borrow_mut().insert(name.clone(), ()),
-            &UnitKind::Jig => self.dirty_jigs.borrow_mut().insert(name.clone(), ()),
-            &UnitKind::Logger => self.dirty_loggers.borrow_mut().insert(name.clone(), ()),
-            &UnitKind::Scenario => self.dirty_scenarios.borrow_mut().insert(name.clone(), ()),
-            &UnitKind::Test => self.dirty_tests.borrow_mut().insert(name.clone(), ()),
-            &UnitKind::Trigger => self.dirty_triggers.borrow_mut().insert(name.clone(), ()),
-            &UnitKind::Internal => None,
+        match *name.kind() {
+            UnitKind::Interface => self.dirty_interfaces.borrow_mut().insert(name.clone(), ()),
+            UnitKind::Jig => self.dirty_jigs.borrow_mut().insert(name.clone(), ()),
+            UnitKind::Logger => self.dirty_loggers.borrow_mut().insert(name.clone(), ()),
+            UnitKind::Scenario => self.dirty_scenarios.borrow_mut().insert(name.clone(), ()),
+            UnitKind::Test => self.dirty_tests.borrow_mut().insert(name.clone(), ()),
+            UnitKind::Trigger => self.dirty_triggers.borrow_mut().insert(name.clone(), ()),
+            UnitKind::Internal => None,
         };
     }
 
@@ -426,15 +426,15 @@ impl UnitLibrary {
     }
 
     pub fn process_message(&self, evt: &UnitEvent) {
-        match evt {
-            &UnitEvent::Status(ref msg) => {
+        match *evt {
+            UnitEvent::Status(ref msg) => {
                 let &UnitStatusEvent {
                     ref name,
                     ref status,
                 } = msg;
 
-                match status {
-                    &UnitStatus::LoadStarted(ref path) => {
+                match *status {
+                    UnitStatus::LoadStarted(ref path) => {
                         process_if!(
                             self,
                             name,
@@ -490,7 +490,7 @@ impl UnitLibrary {
                             trigger_descriptions
                         );
                     }
-                    &UnitStatus::UpdateStarted(ref path) => {
+                    UnitStatus::UpdateStarted(ref path) => {
                         process_if!(
                             self,
                             name,
@@ -537,7 +537,7 @@ impl UnitLibrary {
                             trigger_descriptions
                         );
                     }
-                    &UnitStatus::UnloadStarted(ref path) => {
+                    UnitStatus::UnloadStarted(ref path) => {
                         self.unit_status
                             .borrow_mut()
                             .insert(name.clone(), UnitStatus::UnloadStarted(path.clone()));
@@ -546,7 +546,7 @@ impl UnitLibrary {
                     _ => (),
                 }
             }
-            &UnitEvent::RescanRequest => self.rescan(),
+            UnitEvent::RescanRequest => self.rescan(),
             _ => (),
         }
 

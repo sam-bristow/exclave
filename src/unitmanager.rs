@@ -61,9 +61,9 @@ pub enum FieldType {
 
 impl fmt::Display for FieldType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            &FieldType::Name => write!(f, "name"),
-            &FieldType::Description => write!(f, "description"),
+        match *self {
+            FieldType::Name => write!(f, "name"),
+            FieldType::Description => write!(f, "description"),
         }
     }
 }
@@ -469,14 +469,14 @@ impl UnitManager {
         // Remove the item from its associated Rc array.
         // Note that because these are Rcs, they may live on for a little while
         // longer as references in other objects.
-        let result = match id.kind() {
-            &UnitKind::Internal => Ok(()),
-            &UnitKind::Interface => self.deselect_interface(id),
-            &UnitKind::Jig => self.deselect_jig(id),
-            &UnitKind::Logger => self.deselect_logger(id),
-            &UnitKind::Scenario => self.deselect_scenario(id),
-            &UnitKind::Test => self.deselect_test(id),
-            &UnitKind::Trigger => self.deselect_trigger(id),
+        let result = match *id.kind() {
+            UnitKind::Internal => Ok(()),
+            UnitKind::Interface => self.deselect_interface(id),
+            UnitKind::Jig => self.deselect_jig(id),
+            UnitKind::Logger => self.deselect_logger(id),
+            UnitKind::Scenario => self.deselect_scenario(id),
+            UnitKind::Test => self.deselect_test(id),
+            UnitKind::Trigger => self.deselect_trigger(id),
         };
 
         // A not-okay result is fine, it just means we couldn't find the unit.
@@ -881,10 +881,10 @@ impl UnitManager {
     }
 
     pub fn process_message(&self, msg: &UnitEvent) {
-        match msg {
-            &UnitEvent::ManagerRequest(ref req) => self.manager_request(req),
-            &UnitEvent::Status(ref stat) => self.status_message(stat),
-            &UnitEvent::Log(ref log) => {
+        match *msg {
+            UnitEvent::ManagerRequest(ref req) => self.manager_request(req),
+            UnitEvent::Status(ref stat) => self.status_message(stat),
+            UnitEvent::Log(ref log) => {
                 let mut units_to_deactivate = vec![];
                 for (interface_id, interface) in self.interfaces.borrow().iter() {
                     let log_status_msg = ManagerStatusMessage::Log(log.clone());
@@ -917,16 +917,16 @@ impl UnitManager {
             ref name,
             ref status,
         } = msg;
-        match status {
-            &UnitStatus::Loaded => match name.kind() {
-                &UnitKind::Jig => self.broadcast_jig_named(name),
-                &UnitKind::Scenario => self.broadcast_scenario_named(name),
-                &UnitKind::Test => self.broadcast_test_named(name),
+        match *status {
+            UnitStatus::Loaded => match *name.kind() {
+                UnitKind::Jig => self.broadcast_jig_named(name),
+                UnitKind::Scenario => self.broadcast_scenario_named(name),
+                UnitKind::Test => self.broadcast_test_named(name),
                 _ => (),
             },
-            &UnitStatus::Selected => match name.kind() {
-                &UnitKind::Jig => self.broadcast_selected_jig(),
-                &UnitKind::Scenario => self.broadcast_selected_scenario(),
+            UnitStatus::Selected => match *name.kind() {
+                UnitKind::Jig => self.broadcast_selected_jig(),
+                UnitKind::Scenario => self.broadcast_selected_scenario(),
                 _ => (),
             },
             _ => (),
@@ -1056,9 +1056,9 @@ impl UnitManager {
                 self.deactivate(test_name, "controller requested test stop");
             }
             ManagerControlMessageContents::Shutdown(ref reason) => {
-                let txt = match reason {
-                    &None => format!("shutdown requested (no reason given)"),
-                    &Some(ref s) => format!("shutdown requested: {}", s),
+                let txt = match *reason {
+                    None => format!("shutdown requested (no reason given)"),
+                    Some(ref s) => format!("shutdown requested: {}", s),
                 };
                 self.bc.broadcast(&UnitEvent::Log(LogEntry::new_info(
                     sender_name.clone(),

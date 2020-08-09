@@ -15,23 +15,23 @@ impl UnitLoader {
     }
 
     pub fn process_message(&self, msg: &UnitEvent) {
-        match msg {
-            &UnitEvent::Shutdown => {},
-            &UnitEvent::Status(ref evt) => self.handle_status(evt),
-            &UnitEvent::RescanRequest => (),
-            &UnitEvent::RescanStart => (),
-            &UnitEvent::RescanFinish => (),
-            &UnitEvent::Category(_) => (),
-            &UnitEvent::Log(_) => (),
-            &UnitEvent::ManagerRequest(_) => (),
+        match *msg {
+            UnitEvent::Shutdown => {},
+            UnitEvent::Status(ref evt) => self.handle_status(evt),
+            UnitEvent::RescanRequest => (),
+            UnitEvent::RescanStart => (),
+            UnitEvent::RescanFinish => (),
+            UnitEvent::Category(_) => (),
+            UnitEvent::Log(_) => (),
+            UnitEvent::ManagerRequest(_) => (),
         }
     }
 
     fn handle_status(&self, event: &UnitStatusEvent) {
-        match event.status() {
-            &UnitStatus::Added(ref path) => self.load(event.name(), path),
-            &UnitStatus::Updated(ref path) => self.update(event.name(), path),
-            &UnitStatus::Removed(ref path) => self.unload(event.name(), path),
+        match *event.status() {
+            UnitStatus::Added(ref path) => self.load(event.name(), path),
+            UnitStatus::Updated(ref path) => self.update(event.name(), path),
+            UnitStatus::Removed(ref path) => self.unload(event.name(), path),
             _ => (),
         }
     }

@@ -87,8 +87,8 @@ impl LoggerDescription {
         };
 
         for entry in unit_file.lookup_by_category("Logger") {
-            match entry {
-                &DirectiveEntry::Solo(ref directive) => match directive.key() {
+            match *entry {
+                DirectiveEntry::Solo(ref directive) => match directive.key() {
                     "Name" => logger_description.name = directive.value().unwrap_or("").to_owned(),
                     "Description" => {
                         logger_description.description = directive.value().unwrap_or("").to_owned()
@@ -134,7 +134,7 @@ impl LoggerDescription {
                     }
                     &_ => (),
                 },
-                &_ => (),
+                _ => (),
             }
         }
         Ok(logger_description)

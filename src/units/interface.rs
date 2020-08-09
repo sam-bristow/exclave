@@ -81,8 +81,8 @@ impl InterfaceDescription {
         };
 
         for entry in unit_file.lookup_by_category("Interface") {
-            match entry {
-                &DirectiveEntry::Solo(ref directive) => match directive.key() {
+            match *entry {
+                DirectiveEntry::Solo(ref directive) => match directive.key() {
                     "Name" => {
                         interface_description.name = directive.value().unwrap_or("").to_owned()
                     }
@@ -133,7 +133,7 @@ impl InterfaceDescription {
                     }
                     &_ => (),
                 },
-                &_ => (),
+                _ => (),
             }
         }
         Ok(interface_description)

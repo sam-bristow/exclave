@@ -142,8 +142,8 @@ impl TestDescription {
         };
 
         for entry in unit_file.lookup_by_category("Test") {
-            match entry {
-                &DirectiveEntry::Solo(ref directive) => {
+            match *entry {
+                DirectiveEntry::Solo(ref directive) => {
                     match directive.key() {
                         "Name" => {
                             test_description.name = directive.value().unwrap_or("").to_owned()
@@ -251,7 +251,7 @@ impl TestDescription {
                         &_ => (),
                     }
                 }
-                &_ => (),
+                _ => (),
             }
         }
         if test_description.exec_start == "" {

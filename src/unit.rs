@@ -29,14 +29,14 @@ pub enum UnitKind {
 
 impl fmt::Display for UnitKind {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            &UnitKind::Interface => write!(f, "interface"),
-            &UnitKind::Internal => write!(f, "internal"),
-            &UnitKind::Jig => write!(f, "jig"),
-            &UnitKind::Logger => write!(f, "logger"),
-            &UnitKind::Scenario => write!(f, "scenario"),
-            &UnitKind::Test => write!(f, "test"),
-            &UnitKind::Trigger => write!(f, "trigger"),
+        match *self {
+            UnitKind::Interface => write!(f, "interface"),
+            UnitKind::Internal => write!(f, "internal"),
+            UnitKind::Jig => write!(f, "jig"),
+            UnitKind::Logger => write!(f, "logger"),
+            UnitKind::Scenario => write!(f, "scenario"),
+            UnitKind::Test => write!(f, "test"),
+            UnitKind::Trigger => write!(f, "trigger"),
         }
     }
 }
@@ -55,9 +55,9 @@ pub enum UnitNameError {
 
 impl fmt::Display for UnitNameError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            &UnitNameError::NoFileExtension => write!(f, "no file extension"),
-            &UnitNameError::UnrecognizedUnitType(ref t) => {
+        match *self {
+            UnitNameError::NoFileExtension => write!(f, "no file extension"),
+            UnitNameError::UnrecognizedUnitType(ref t) => {
                 write!(f, "unrecognized unit type \".{}\"", t)
             }
         }
@@ -153,34 +153,34 @@ pub enum UnitIncompatibleReason {
 
 impl fmt::Display for UnitIncompatibleReason {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            &UnitIncompatibleReason::TestProgramFailed(ref program_name) => {
+        match *self {
+            UnitIncompatibleReason::TestProgramFailed(ref program_name) => {
                 write!(f, "Test program {} failed", program_name)
             }
-            &UnitIncompatibleReason::TestProgramReturnedNonzero(val, ref program_name) => {
+            UnitIncompatibleReason::TestProgramReturnedNonzero(val, ref program_name) => {
                 write!(f, "Test program {} returned {}", program_name, val)
             }
-            &UnitIncompatibleReason::TestFileNotPresent(ref file_name) => {
+            UnitIncompatibleReason::TestFileNotPresent(ref file_name) => {
                 write!(f, "Test file {} not present", file_name)
             }
-            &UnitIncompatibleReason::IncompatibleJig => write!(f, "Jig not compatible"),
-            &UnitIncompatibleReason::DependencyError(ref dep_error) => match dep_error {
-                &DepError::RequirementsNotFound(ref req) => {
+            UnitIncompatibleReason::IncompatibleJig => write!(f, "Jig not compatible"),
+            UnitIncompatibleReason::DependencyError(ref dep_error) => match *dep_error {
+                DepError::RequirementsNotFound(ref req) => {
                     write!(f, "Requirement '{}' not found", req)
                 }
-                &DepError::RequirementNotFound(ref req1, ref req2) => {
+                DepError::RequirementNotFound(ref req1, ref req2) => {
                     write!(f, "Requirement {} not found for {}", req1, req2)
                 }
-                &DepError::SuggestionsNotFound(ref req) => {
+                DepError::SuggestionsNotFound(ref req) => {
                     write!(f, "Suggestion '{}' not found", req)
                 }
-                &DepError::SuggestionNotFound(ref req1, ref req2) => {
+                DepError::SuggestionNotFound(ref req1, ref req2) => {
                     write!(f, "Suggestion {} not found for {}", req1, req2)
                 }
-                &DepError::DependencyNotFound(ref name) => {
+                DepError::DependencyNotFound(ref name) => {
                     write!(f, "Dependency '{}' not found", name)
                 }
-                &DepError::CircularDependency(ref req1, ref req2) => {
+                DepError::CircularDependency(ref req1, ref req2) => {
                     write!(f, "{} and {} have a circular dependency", req1, req2)
                 }
             },
@@ -222,9 +222,9 @@ pub enum UnitSelectError {
 
 impl fmt::Display for UnitSelectError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            &UnitSelectError::UnitNotFound => write!(f, "couldn't find unit by ID"),
-            &UnitSelectError::NoCompatibleJig => write!(f, "couldn't find any compatible jig"),
+        match *self {
+            UnitSelectError::UnitNotFound => write!(f, "couldn't find unit by ID"),
+            UnitSelectError::NoCompatibleJig => write!(f, "couldn't find any compatible jig"),
         }
     }
 }
@@ -259,19 +259,19 @@ impl From<RunnyError> for UnitActivateError {
 
 impl fmt::Display for UnitActivateError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            &UnitActivateError::ExecFailed(ref re) => match re {
-                &RunnyError::RunnyIoError(ref e) => write!(f, "Unable to activate unit: {}", e),
-                &RunnyError::NoCommandSpecified => {
+        match *self {
+            UnitActivateError::ExecFailed(ref re) => match *re {
+                RunnyError::RunnyIoError(ref e) => write!(f, "Unable to activate unit: {}", e),
+                RunnyError::NoCommandSpecified => {
                     write!(f, "Unable to activate unit: No command specified")
                 }
                 #[cfg(unix)]
-                &RunnyError::NixError(ref e) => {
+                RunnyError::NixError(ref e) => {
                     write!(f, "Unable to activate unit: Nix library error: {:?}", e)
                 }
             },
-            &UnitActivateError::UnitNotFound => write!(f, "Couldn't find unit by id"),
-            &UnitActivateError::UnitNotSelected => write!(f, "Tried to activate a deselected unit"),
+            UnitActivateError::UnitNotFound => write!(f, "Couldn't find unit by id"),
+            UnitActivateError::UnitNotSelected => write!(f, "Tried to activate a deselected unit"),
         }
     }
 }
@@ -295,10 +295,10 @@ impl From<RunningError> for UnitDeactivateError {
 
 impl fmt::Display for UnitDeactivateError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            &UnitDeactivateError::NonZeroReturn(i) => write!(f, "Nonzero return: {}", i),
-            &UnitDeactivateError::RunningError(ref e) => write!(f, "Running error: {:?}", e),
-            &UnitDeactivateError::UnitNotFound => write!(f, "Couldn't find unit by id"),
+        match *self {
+            UnitDeactivateError::NonZeroReturn(i) => write!(f, "Nonzero return: {}", i),
+            UnitDeactivateError::RunningError(ref e) => write!(f, "Running error: {:?}", e),
+            UnitDeactivateError::UnitNotFound => write!(f, "Couldn't find unit by id"),
         }
     }
 }
@@ -359,24 +359,24 @@ impl From<std::num::ParseIntError> for UnitDescriptionError {
 
 impl fmt::Display for UnitDescriptionError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            &UnitDescriptionError::InvalidUnitName(ref reason) => {
+        match *self {
+            UnitDescriptionError::InvalidUnitName(ref reason) => {
                 write!(f, "invalid unit name '{}'", reason)
             }
-            &UnitDescriptionError::MissingSection(ref sec) => {
+            UnitDescriptionError::MissingSection(ref sec) => {
                 write!(f, "missing [{}] section", sec)
             }
-            &UnitDescriptionError::FileOpenError(ref e) => {
+            UnitDescriptionError::FileOpenError(ref e) => {
                 write!(f, "unable to open file -- {}", e)
             }
-            &UnitDescriptionError::ParseError(ref e) => write!(f, "syntax error: {}", e),
-            &UnitDescriptionError::HumantimeError(ref e) => write!(f, "time parse error: {}", e),
-            &UnitDescriptionError::RegexError(ref e) => write!(f, "unable to parse regex: {}", e),
-            &UnitDescriptionError::MissingValue(ref sec, ref key) => {
+            UnitDescriptionError::ParseError(ref e) => write!(f, "syntax error: {}", e),
+            UnitDescriptionError::HumantimeError(ref e) => write!(f, "time parse error: {}", e),
+            UnitDescriptionError::RegexError(ref e) => write!(f, "unable to parse regex: {}", e),
+            UnitDescriptionError::MissingValue(ref sec, ref key) => {
                 write!(f, "key '{}' in section '{}' requires a value", key, sec)
             }
-            &UnitDescriptionError::ParseIntError(ref e) => write!(f, "int parse error: {}", e),
-            &UnitDescriptionError::InvalidValue(ref sec, ref key, ref val, ref allowed) => write!(
+            UnitDescriptionError::ParseIntError(ref e) => write!(f, "int parse error: {}", e),
+            UnitDescriptionError::InvalidValue(ref sec, ref key, ref val, ref allowed) => write!(
                 f,
                 "key {} in section {} has invalid value: {}, must be one of: {}",
                 key,

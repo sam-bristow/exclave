@@ -63,32 +63,32 @@ pub enum UnitStatus {
 
 impl fmt::Display for UnitStatus {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            &UnitStatus::Added(ref path) => write!(f, "added file {}", path.to_string_lossy()),
-            &UnitStatus::Updated(ref path) => write!(f, "updated file {}", path.to_string_lossy()),
-            &UnitStatus::LoadStarted(ref path) => {
+        match *self {
+            UnitStatus::Added(ref path) => write!(f, "added file {}", path.to_string_lossy()),
+            UnitStatus::Updated(ref path) => write!(f, "updated file {}", path.to_string_lossy()),
+            UnitStatus::LoadStarted(ref path) => {
                 write!(f, "load started {}", path.to_string_lossy())
             }
-            &UnitStatus::LoadFailed(ref x) => write!(f, "load failed: {}", x),
-            &UnitStatus::Loaded => write!(f, "loaded"),
-            &UnitStatus::Selected => write!(f, "selected"),
-            &UnitStatus::SelectFailed(ref reason) => write!(f, "select failed: {}", reason),
-            &UnitStatus::Deselected(ref reason) => write!(f, "deselected: {}", reason),
-            &UnitStatus::Active => write!(f, "active"),
-            &UnitStatus::ActivationFailed(ref reason) => write!(f, "activation failed: {}", reason),
-            &UnitStatus::DeactivatedSuccessfully(ref x) => {
+            UnitStatus::LoadFailed(ref x) => write!(f, "load failed: {}", x),
+            UnitStatus::Loaded => write!(f, "loaded"),
+            UnitStatus::Selected => write!(f, "selected"),
+            UnitStatus::SelectFailed(ref reason) => write!(f, "select failed: {}", reason),
+            UnitStatus::Deselected(ref reason) => write!(f, "deselected: {}", reason),
+            UnitStatus::Active => write!(f, "active"),
+            UnitStatus::ActivationFailed(ref reason) => write!(f, "activation failed: {}", reason),
+            UnitStatus::DeactivatedSuccessfully(ref x) => {
                 write!(f, "deactivated successfully: {}", x)
             }
-            &UnitStatus::DeactivatedUnsuccessfully(ref x) => {
+            UnitStatus::DeactivatedUnsuccessfully(ref x) => {
                 write!(f, "deactivated unsuccessfilly: {}", x)
             }
-            &UnitStatus::UnloadStarted(ref path) => {
+            UnitStatus::UnloadStarted(ref path) => {
                 write!(f, "unloading {}", path.to_string_lossy())
             }
-            &UnitStatus::UpdateStarted(ref path) => {
+            UnitStatus::UpdateStarted(ref path) => {
                 write!(f, "updating {}", path.to_string_lossy())
             }
-            &UnitStatus::Removed(ref path) => write!(f, "removed file {}", path.to_string_lossy()),
+            UnitStatus::Removed(ref path) => write!(f, "removed file {}", path.to_string_lossy()),
         }
     }
 }
@@ -259,9 +259,9 @@ pub enum LogType {
 
 impl LogType {
     pub fn as_str(&self) -> &str {
-        match self {
-            &LogType::Error => "error",
-            &LogType::Info => "info",
+        match *self {
+            LogType::Error => "error",
+            LogType::Info => "info",
         }
     }
 }
