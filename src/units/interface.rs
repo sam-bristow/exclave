@@ -272,7 +272,7 @@ impl Interface {
         unimplemented!();
     }
 
-    fn cfti_escape(msg: &String) -> String {
+    fn cfti_escape(msg: &str) -> String {
         msg.replace("\\", "\\\\")
             .replace("\t", "\\t")
             .replace("\n", "\\n")

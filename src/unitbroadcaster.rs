@@ -237,10 +237,10 @@ pub struct UnitCategoryEvent {
 }
 
 impl UnitCategoryEvent {
-    pub fn new(kind: UnitKind, status: &UnitCategoryStatus) -> Self {
+    pub fn new(kind: UnitKind, status: &str) -> Self {
         UnitCategoryEvent {
             kind,
-            status: status.clone(),
+            status: status.to_string(),
         }
     }
     pub fn kind(&self) -> &UnitKind {

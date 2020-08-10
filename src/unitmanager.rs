@@ -1306,15 +1306,15 @@ impl UnitManager {
         }
     }
 
-    fn broadcast_skipped(&self, unit_id: &UnitName, reason: &String) {
-        let msg = ManagerStatusMessage::Skipped(unit_id.clone(), reason.clone());
+    fn broadcast_skipped(&self, unit_id: &UnitName, reason: &str) {
+        let msg = ManagerStatusMessage::Skipped(unit_id.clone(), reason.to_string());
         for (interface_id, _) in self.interfaces.borrow().iter() {
             self.send_messages_to(interface_id, vec![msg.clone()]);
         }
     }
 
-    fn broadcast_finished(&self, unit_id: &UnitName, code: u32, message: &String) {
-        let msg = ManagerStatusMessage::Finished(unit_id.clone(), code, message.clone());
+    fn broadcast_finished(&self, unit_id: &UnitName, code: u32, message: &str) {
+        let msg = ManagerStatusMessage::Finished(unit_id.clone(), code, message.to_string());
         for (interface_id, _) in self.interfaces.borrow().iter() {
             self.send_messages_to(interface_id, vec![msg.clone()]);
         }

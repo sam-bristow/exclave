@@ -683,7 +683,7 @@ impl Scenario {
     /// Will emit an AdvanceScenario message upon completion.
     fn run_support_cmd(
         &self,
-        cmd: &String,
+        cmd: &str,
         ctrl: &Sender<ManagerControlMessage>,
         timeout: &Option<Duration>,
         testname: &str,
@@ -724,7 +724,7 @@ impl Scenario {
         let thr_waiter = running.waiter();
         let thr_control = ctrl.clone();
         let id = self.id().clone();
-        let thr_cmd = cmd.clone();
+        let thr_cmd = cmd.to_string();
         let thr_testname = testname.to_owned();
         thread::spawn(move || {
             thr_waiter.wait();
