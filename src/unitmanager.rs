@@ -1102,7 +1102,7 @@ impl UnitManager {
     /// Send all available scenarios to the specified endpoint.
     pub fn send_scenarios_to(&self, sender_name: &UnitName) {
         let mut messages = vec![ManagerStatusMessage::Scenarios(
-            self.scenarios.borrow().keys().map(|x| x.clone()).collect(),
+            self.scenarios.borrow().keys().cloned().collect(),
         )];
         for (scenario_id, scenario) in self.scenarios.borrow().iter() {
             messages.push(ManagerStatusMessage::Describe(
@@ -1202,7 +1202,7 @@ impl UnitManager {
 
     fn broadcast_scenario_list(&self) {
         let msg = ManagerStatusMessage::Scenarios(
-            self.scenarios.borrow().keys().map(|x| x.clone()).collect(),
+            self.scenarios.borrow().keys().cloned().collect(),
         );
         for (interface_id, _) in self.interfaces.borrow().iter() {
             self.send_messages_to(interface_id, vec![msg.clone()]);
