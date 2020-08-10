@@ -306,7 +306,7 @@ impl Interface {
                 for test in &tests {
                     write!(process, " {}", Self::cfti_escape(test.id()))?;
                 }
-                writeln!(process, "")
+                writeln!(process)
             }
             ManagerStatusMessage::Scenario(name) => match name {
                 Some(s) => writeln!(process, "SCENARIO {}", Self::cfti_escape(s.id())),
@@ -317,7 +317,7 @@ impl Interface {
                 for scenario_name in list {
                     write!(process, " {}", Self::cfti_escape(scenario_name.id()))?;
                 }
-                writeln!(process, "")
+                writeln!(process)
             }
             ManagerStatusMessage::Describe(id, field, value) => writeln!(
                 process,
