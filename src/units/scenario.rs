@@ -276,7 +276,7 @@ impl ScenarioDescription {
                 scenario_description.exec_stop_failure = Some(s.clone());
             }
             if scenario_description.exec_stop_success.is_none() {
-                scenario_description.exec_stop_success = Some(s.clone());
+                scenario_description.exec_stop_success = Some(s);
             }
         }
 

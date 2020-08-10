@@ -136,7 +136,6 @@ impl JigDescription {
                 .directory(&Some(
                     config
                         .working_directory(&self.unit_directory, &self.working_directory)
-                        .clone(),
                 ))
                 .timeout(config.timeout().clone())
                 .path(config.paths().clone())
