@@ -530,7 +530,7 @@ impl Scenario {
         self.start_time = Instant::now();
         *self.state.borrow_mut() = ScenarioState::Idle;
         *self.exec_start_state.borrow_mut() = TestState::Pending;
-        for (_, item) in &self.test_states {
+        for item in self.test_states.values()  {
             *item.borrow_mut() = TestState::Pending;
         }
 
