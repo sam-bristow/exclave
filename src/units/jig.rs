@@ -137,7 +137,7 @@ impl JigDescription {
                     config
                         .working_directory(&self.unit_directory, &self.working_directory)
                 ))
-                .timeout(config.timeout().clone())
+                .timeout(*config.timeout())
                 .path(config.paths().clone())
                 .start()?;
 

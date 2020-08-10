@@ -186,7 +186,7 @@ impl Interface {
         Interface {
             desc: desc.clone(),
             process: RefCell::new(None),
-            terminate_timeout: config.terminate_timeout().clone(),
+            terminate_timeout: *config.terminate_timeout(),
         }
     }
 

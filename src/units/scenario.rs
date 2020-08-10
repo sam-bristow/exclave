@@ -282,10 +282,10 @@ impl ScenarioDescription {
 
         if let Some(s) = exec_stop_timeout {
             if scenario_description.exec_stop_failure_timeout.is_none() {
-                scenario_description.exec_stop_failure_timeout = Some(s.clone());
+                scenario_description.exec_stop_failure_timeout = Some(s);
             }
             if scenario_description.exec_stop_success_timeout.is_none() {
-                scenario_description.exec_stop_success_timeout = Some(s.clone());
+                scenario_description.exec_stop_success_timeout = Some(s);
             }
         }
 
