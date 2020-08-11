@@ -535,7 +535,7 @@ impl Scenario {
         }
 
         // Re-assign our working directory.
-        if let &Some(ref wd) = &self.description.working_directory {
+        if let Some(ref wd) = self.description.working_directory {
             config.set_scenario_working_directory(&wd);
         } else {
             config.clear_scenario_working_directory();
@@ -647,7 +647,7 @@ impl Scenario {
                 self.run_support_cmd(cmd, ctrl, &self.description.exec_start_timeout, "execstart");
             }
             ScenarioState::Running(next_step) => {
-                let ref test = self.test_sequence[next_step].borrow();
+                let test = &self.test_sequence[next_step].borrow();
                 ctrl.send(ManagerControlMessage::new(
                     self.id(),
                     ManagerControlMessageContents::StartTest(test.id().clone()),
