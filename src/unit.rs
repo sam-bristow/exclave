@@ -169,13 +169,13 @@ impl fmt::Display for UnitIncompatibleReason {
                     write!(f, "Requirement '{}' not found", req)
                 }
                 DepError::RequirementNotFound(ref req1, ref req2) => {
-                    write!(f, "Requirement {} not found for {}", req1, req2)
+                    write!(f, "Requirement {} not found for {}", req2, req1)
                 }
                 DepError::SuggestionsNotFound(ref req) => {
                     write!(f, "Suggestion '{}' not found", req)
                 }
                 DepError::SuggestionNotFound(ref req1, ref req2) => {
-                    write!(f, "Suggestion {} not found for {}", req1, req2)
+                    write!(f, "Suggestion {} not found for {}", req2, req1)
                 }
                 DepError::DependencyNotFound(ref name) => {
                     write!(f, "Dependency '{}' not found", name)
